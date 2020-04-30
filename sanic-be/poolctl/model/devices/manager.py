@@ -7,7 +7,6 @@ from typing import Optional, Dict, List
 from sanic.log import logger as log
 
 from poolctl import settings as cfg
-from poolctl.model.exc import DeviceKindNotRegistered
 from poolctl.utils.misc import nameof
 from poolctl.model.devices.named import DeviceDriver, get_device_names_registry
 

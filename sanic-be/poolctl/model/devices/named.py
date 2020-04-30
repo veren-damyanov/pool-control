@@ -4,7 +4,7 @@ TODO: document
 """
 from __future__ import annotations
 
-from typing import Type, Optional, Dict
+from typing import Type, Dict
 
 from poolctl.utils.misc import typeof, nameof
 from poolctl.model.exc import (
@@ -13,7 +13,11 @@ from poolctl.model.exc import (
     DeviceKindAlreadyRegistered,
     DeviceKindNotRegistered,
 )
-from poolctl.model.devices.base import PinMode, PinDriver, _PinDriverMeta
+from poolctl.model.devices.base import (
+    PinMode,
+    PinDriver,
+    _PinDriverMeta,
+)
 
 
 class DeviceNamesRegistry(object):
@@ -143,6 +147,14 @@ class OutputDeviceDriver(DeviceDriver):
         self._pi.write(self._pin, 0)
         self._is_on = False
 
+    def as_dict(self):
+        return dict(
+            name=self._name,
+            kind=self.__kind__,
+            gpio=self._pin,
+            active=self._is_on,
+        )
+
 
 class PwmDeviceDriver(OutputDeviceDriver):
     __kind__ = None
@@ -160,6 +172,8 @@ class PwmDeviceDriver(OutputDeviceDriver):
         if self._is_on:
             self._apply_duty_cycle()
 
+    configure = set_duty_cycle  # configuring here means to set the duty cycle
+
     def on(self):
         self._is_on = True
         self._apply_duty_cycle()
@@ -167,6 +181,15 @@ class PwmDeviceDriver(OutputDeviceDriver):
     def off(self):
         self._pi.set_PWM_dutycycle(self._pin, 0)
         self._is_on = False
+
+    def as_dict(self):
+        return dict(
+            name=self._name,
+            kind=self.__kind__,
+            gpio=self._pin,
+            active=self._is_on,
+            duty_cycle=self._duty_cycle,
+        )
 
 
 class PumpDriver(PwmDeviceDriver):

@@ -17,7 +17,8 @@ def manager():
 def test_put_device__get_device(manager):
     manager.put_device('P1', 'pump', 3)
     device_rec = manager.get_device('P1')
-    assert {'gpio': 3, 'kind': 'pump', 'name': 'P1'} == device_rec
+    expected = {'active': False, 'duty_cycle': 0, 'gpio': 3, 'kind': 'pump', 'name': 'P1'}
+    assert device_rec == expected
 
 
 def test_delete_device(manager):
@@ -34,8 +35,8 @@ def test_get_all__returns_list(manager):
     manager.put_device('P1', 'pump', 7)
     manager.put_device('P2', 'pump', 3)
     expected = [
-        {'name': 'P1', 'kind': 'pump', 'gpio': 7},
-        {'name': 'P2', 'kind': 'pump', 'gpio': 3},
+        {'active': False, 'duty_cycle': 0, 'gpio': 7, 'kind': 'pump', 'name': 'P1'},
+        {'active': False, 'duty_cycle': 0, 'gpio': 3, 'kind': 'pump', 'name': 'P2'},
     ]
     assert manager.get_all() == expected
 

@@ -44,9 +44,9 @@ def test_post_some__get_all(devices_res, mock_request):
     expected = {
         'status': 'success',
         'devices': [
-            {'name': 'L2', 'kind': 'light', 'gpio': 9},
-            {'name': 'P2', 'kind': 'pump', 'gpio': 7},
-        ]
+            {'active': False, 'duty_cycle': 0, 'gpio': 9, 'kind': 'light', 'name': 'L2'},
+            {'active': False, 'duty_cycle': 0, 'gpio': 7, 'kind': 'pump', 'name': 'P2'},
+        ],
     }
     assert devices_res.get_all() == expected
 
@@ -108,10 +108,14 @@ def test_delete(devices_res, mock_request):
     _post_some(devices_res, mock_request)
     mock_request.json = {}
     removed = devices_res.delete(mock_request, 'L2')
-    assert removed == {'status': 'success', 'deleted_record': {'name': 'L2', 'kind': 'light', 'gpio': 9}}
+    expected_removed = {
+        'status': 'success',
+        'deleted_record': {'active': False, 'duty_cycle': 0, 'gpio': 9, 'kind': 'light', 'name': 'L2'},
+    }
+    assert removed == expected_removed
     expected = {
         'status': 'success',
-        'devices': [{'name': 'P2', 'kind': 'pump', 'gpio': 7}]
+        'devices': [{'active': False, 'duty_cycle': 0, 'gpio': 7, 'kind': 'pump', 'name': 'P2'}],
     }
     assert devices_res.get_all() == expected
     devices_res.delete(mock_request, 'P2')

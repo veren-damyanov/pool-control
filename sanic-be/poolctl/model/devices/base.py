@@ -4,8 +4,10 @@ Singleton instance factories.
 """
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Any, Optional, Dict
 from enum import Enum
+
+from sanic.log import logger as log
 
 from poolctl import settings as cfg
 from poolctl.utils.misc import typeof
@@ -84,11 +86,20 @@ def get_pin_driver_registry() -> PinDriverRegistry:
 def get_pi_instance():  # -> pigpio.pi
     """Return the ``pigpio.pi`` single instance."""
     global _pi_object
-    if not _pi_object:
-        import pigpio
-        _pi_object = pigpio.pi(cfg.PIGPIOD_HOST, cfg.PIGPIOD_PORT)
-        if not _pi_object.connected:
-            raise PigpiodNotReachable(cfg.PIGPIOD_HOST, cfg.PIGPIOD_PORT)
+    if _pi_object:
+        return _pi_object
+
+    if cfg.PIGPIOD_HOST.upper().startswith('FAKE'):
+        from unittest.mock import MagicMock
+        _pi_object = MagicMock()
+        log.warning('set up FAKE pi instance')
+        return _pi_object
+
+    import pigpio
+    _pi_object = pigpio.pi(cfg.PIGPIOD_HOST, cfg.PIGPIOD_PORT)
+    if not _pi_object.connected:
+        raise PigpiodNotReachable(cfg.PIGPIOD_HOST, cfg.PIGPIOD_PORT)
+    log.info('success connecting to pigpiod at %s:%s', cfg.PIGPIOD_HOST, cfg.PIGPIOD_PORT)
     return _pi_object
 
 
@@ -120,6 +131,11 @@ class PinDriver(object, metaclass=_PinDriverMeta):
 
     def off(self):
         """Switch off device connected to this pin on. Default implementation
+        does nothing."""
+
+    def configure(self, param: Any):
+        """Configure device activity parameter. (Typically, this would be
+        the percent value of the PWM duty cycle.) Default implementation
         does nothing."""
 
     def _park_pin(self):

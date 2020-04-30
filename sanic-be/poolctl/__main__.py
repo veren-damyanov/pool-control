@@ -10,23 +10,6 @@ from poolctl.utils.misc import typeof
 from poolctl.app import app
 
 
-@app.listener('before_server_start')
-async def initialize_scheduler(app, loop):
-    log.info('Server starting up...')
-    from poolctl.restapi.endpoints.devices import report_devices_ep_availability
-    report_devices_ep_availability()
-
-
-@app.listener('before_server_stop')
-async def async_notify_server_stopping(app, loop):
-    log.info('Back-end shutting down...')
-
-
-@app.listener('after_server_stop')
-async def async_notify_server_stopping(app, loop):
-    log.info('Back-end shut down cleanly.')
-
-
 def main():
     try:
         app.run(**cfg.APP_ARGS)
