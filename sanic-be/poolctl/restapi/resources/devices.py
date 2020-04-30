@@ -4,8 +4,12 @@ Controller processing REST API requests ... TODO: describe briefly
 """
 from sanic.log import logger as log
 
-from poolctl.utils.misc import Undef, check_type
-from poolctl.model.exc import DeviceNameAlreadyUsed, DeviceKindNotRegistered, PinAlreadyInUse
+from poolctl.utils.misc import check_type
+from poolctl.model.exc import (
+    DeviceNameAlreadyUsed,
+    DeviceKindNotRegistered,
+    PinAlreadyInUse,
+)
 from poolctl.model.devices.manager import DeviceManager
 from ._common import BaseResource, abort_400, abort_404, abort_409
 
@@ -23,16 +27,16 @@ class DevicesResource(BaseResource):
 
     def __init__(self, device_manager: DeviceManager):
         check_type(device_manager, DeviceManager)
-        self._devmgr = device_manager
+        self._manager = device_manager
 
     def get_all(self, order_by=None):  # TODO: implement sorting
         return {
             'status': 'success',
-            'devices': [device_rec for device_rec in self._devmgr.get_all()],
+            'devices': [device_rec for device_rec in self._manager.get_all()],
         }
 
     def get(self, request, name):
-        device_rec = self._devmgr.get_device(name)
+        device_rec = self._manager.get_device(name)
         if not device_rec:
             abort_404('gpio device not found for name ' + name)
 
@@ -49,7 +53,7 @@ class DevicesResource(BaseResource):
         gpio = int(device_rec['gpio'])
 
         try:
-            put_record = self._devmgr.put_device(name, kind, gpio)
+            put_record = self._manager.put_device(name, kind, gpio)
 
         except PinAlreadyInUse as err:
             log.error('Pin already in use by %s (device_rec=%r)', err, device_rec)
@@ -78,13 +82,13 @@ class DevicesResource(BaseResource):
             log.error('Put device: bad request: rec_name=%r != name=%r (device_rec=%r)')
             abort_400(f'body name != url name ({rec_name!r} != {name!r})')
 
-        if not self._devmgr.has(name):
+        if not self._manager.has(name):
             log.warning('Put device: device name not found: %r for (device_rec=%r)', name, device_rec)
             abort_404('record not found for name ' + name)
 
-        self._devmgr.delete_device(name)
+        self._manager.delete_device(name)
         try:
-            put_record = self._devmgr.put_device(name, device_rec['kind'], int(device_rec['gpio']))
+            put_record = self._manager.put_device(name, device_rec['kind'], int(device_rec['gpio']))
 
         except DeviceKindNotRegistered as err:
             abort_400(f"illegal device kind {str(err)!r}")
@@ -96,7 +100,7 @@ class DevicesResource(BaseResource):
             }
 
     def delete(self, request, name):
-        rec = self._devmgr.delete_device(name)
+        rec = self._manager.delete_device(name)
         if rec is None:
             abort_404(f'record not found for name {name!r}')
 
@@ -108,12 +112,13 @@ class DevicesResource(BaseResource):
     def get_available_devices(self, request):
         return {
             'status': 'success',
-            'names': self._devmgr.get_available_names(),
-            'gpios': self._devmgr.get_available_gpios(),
+            'names': self._manager.get_available_names(),
+            'gpios': self._manager.get_available_gpios(),
+            'kinds': self._manager.get_available_kinds(),
         }
 
     def get_devices_inuse(self, request):
         return {
             'status': 'success',
-            'names': self._devmgr.get_devices_inuse(),
+            'names': self._manager.get_devices_inuse(),
         }

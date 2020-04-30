@@ -1,6 +1,6 @@
 """Unit tests for the devices REST API resource."""
+
 import pytest
-import sys
 
 from sanic.exceptions import NotFound, InvalidUsage, SanicException
 
@@ -131,6 +131,7 @@ def test_get_available_devices__on_empty_backend(devices_res, mock_request):
         'status': 'success',
         'names': ['P1', 'P2', 'L1', 'L2', 'L3', 'L4', 'T', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9'],
         'gpios': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+        'kinds': ['light', 'pump', 'relay'],
     }
     assert devices_res.get_available_devices(mock_request) == expected
 

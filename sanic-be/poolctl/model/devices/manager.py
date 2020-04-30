@@ -75,5 +75,8 @@ class DeviceManager(object):
         used_pins = set(device.pin for device in self.devices.values())
         return [pin for pin in self.ALL_GPIOS if pin not in used_pins]
 
+    def get_available_kinds(self):
+        return sorted(get_device_names_registry().all_kinds().keys())
+
     def get_devices_inuse(self):
         return [name for name in cfg.ALL_DEVICE_NAMES if name in self.devices]

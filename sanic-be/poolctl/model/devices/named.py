@@ -78,7 +78,8 @@ class _DeviceDriverMeta(_PinDriverMeta):
 
     def __init__(cls: Type[DeviceDriver], name: str, bases: tuple, attribs: dict):
         kind = attribs['__kind__']
-        get_device_names_registry().register_kind(kind, cls)
+        if kind:
+            get_device_names_registry().register_kind(kind, cls)
         super().__init__(name, bases, attribs)
 
     def __call__(cls: DeviceDriver, pin: int, *args):

@@ -106,6 +106,13 @@ def test_get_available_gpios__case_2(manager):
     assert manager.get_available_gpios() == expected
 
 
+def test_get_available_kinds(manager):
+    expected = {'pump', 'light', 'relay'}
+    assert set(manager.get_available_kinds()) == expected
+    manager.put_device('P1', 'pump', 7)
+    assert set(manager.get_available_kinds()) == expected
+
+
 def test_get_devices_inuse__empty_manager_returns_empty_list(manager):
     assert manager.get_devices_inuse() == []
 
