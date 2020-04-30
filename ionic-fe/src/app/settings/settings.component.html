@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+	<ion-toolbar>
+		<ion-title>
+			Settings
+		</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+	<form [formGroup]="form" (ngSubmit)="submitForm()">
+		<ion-item>
+			<ion-label>IP Address:</ion-label>
+			<ion-input slot="end" formControlName="ip"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Port:</ion-label>
+			<ion-input slot="end" formControlName="port"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Time granularity (min.):</ion-label>
+			<ion-select okText="OK" cancelText="Cancel" formControlName="timepicker">
+				<ion-select-option value="1">1</ion-select-option>
+				<ion-select-option value="5">5</ion-select-option>
+				<ion-select-option value="10">10</ion-select-option>
+				<ion-select-option value="15">15</ion-select-option>
+			</ion-select>
+		</ion-item>
+		
+		<ion-button class="save_button button-padding" size="default" type="submit" fill="outline" slot="start" block>Save
+		</ion-button>
+	</form>
+</ion-content>

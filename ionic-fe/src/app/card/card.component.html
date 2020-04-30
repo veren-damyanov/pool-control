@@ -1,0 +1,30 @@
+<ion-card>
+	<ion-card-header>
+		<ion-item class="card-item-time ion-no-padding" lines="none">
+			{{ formatTime(record.start_at) }} - {{ formatTime(record.end_at) }}
+			<ion-buttons slot="end">
+				<ion-button id="context-button" size="small" (click)="presentContextPopover($event)">
+					<ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+		</ion-item>
+		<ion-item class="card-item-days ion-no-padding" lines="none">
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('MO') > -1)?'dow-on':'dow-off'">MO</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('TU') > -1)?'dow-on':'dow-off'">TU</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('WE') > -1)?'dow-on':'dow-off'">WE</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('TH') > -1)?'dow-on':'dow-off'">TH</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('FR') > -1)?'dow-on':'dow-off'">FR</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('SA') > -1)?'dow-on':'dow-off'">SA</span>
+			<span class="weekdays-span" [ngClass]="(record.dow.indexOf('SU') > -1)?'dow-on':'dow-off'">SU</span>
+		</ion-item>
+		<ion-item class="card-item-value ion-no-padding" lines="none">
+			<ion-icon class="icon" *ngIf="record.target.startsWith('T')" name="thermometer"></ion-icon>
+			<ion-icon class="icon" *ngIf="record.target.startsWith('P')" name="aperture"></ion-icon>
+			<ion-icon class="icon" *ngIf="record.target.startsWith('L')" name="bulb"></ion-icon>
+			<ion-icon class="icon" *ngIf="record.target.startsWith('D')" name="toggle"></ion-icon>
+			<span class="target-span">{{ record.target }}</span> - <span class="value-span">{{ record.value }}</span>
+			<span class="value-span" *ngIf="record.target.startsWith('T')">°F</span>
+			<span class="value-span" *ngIf="record.target.startsWith('P') || record.target.startsWith('L')">%</span>
+		</ion-item>
+	</ion-card-header>
+</ion-card>

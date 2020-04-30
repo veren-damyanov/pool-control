@@ -1,0 +1,55 @@
+<ion-content>
+	<ion-list>
+		<form [formGroup]="form" (ngSubmit)="submitForm()">
+			<ion-item> Schedule Record: </ion-item>
+			<ion-item>
+				<ion-label> Device: </ion-label>
+				<ion-select okText="OK" cancelText="Cancel" formControlName="target"
+					(ionChange)="onTargetChange($event.target.value)">
+					<ion-select-option *ngFor="let device of inUse" value="{{ device }}">{{ device }}
+					</ion-select-option>
+				</ion-select>
+			</ion-item>
+			<ion-item>
+				<ion-button id="valueButton" size="default" expand="block" (click)="openPicker(1, 11, valueOptions)">
+					{{ valueButtonName }}</ion-button>
+				<ion-input id="valueInput" formControlName="value" slot="end" disabled></ion-input>
+			</ion-item>
+
+			<ion-item></ion-item>
+
+			<ion-item>
+				<ion-label> Start Time: </ion-label>
+				<ion-datetime display-timezone="Europe/Sofia" formControlName="start_at" display-format="hh:mm A"
+					picker-format="hh:mm A" minuteValues="{{ timepickerList }}">
+				</ion-datetime>
+			</ion-item>
+			<ion-item>
+				<ion-label> End Time: </ion-label>
+				<ion-datetime display-timezone="Europe/Sofia" formControlName="end_at" display-format="hh:mm A"
+					picker-format="hh:mm A" minuteValues="{{ timepickerList }}"></ion-datetime>
+			</ion-item>
+			<ion-item>
+				<ion-label> Days: </ion-label>
+				<ion-select formControlName="dow" multiple="true">
+					<ion-select-option>MO</ion-select-option>
+					<ion-select-option>TU</ion-select-option>
+					<ion-select-option>WE</ion-select-option>
+					<ion-select-option>TH</ion-select-option>
+					<ion-select-option>FR</ion-select-option>
+					<ion-select-option>SA</ion-select-option>
+					<ion-select-option>SU</ion-select-option>
+				</ion-select>
+			</ion-item>
+
+			<ion-item></ion-item>
+
+			<ion-item>
+				<ion-button class="save_button" size="default" type="submit" fill="outline" slot="start" block>Save
+				</ion-button>
+				<ion-button class="cancel_button" size="default" fill="outline" block (click)="cancelModal()">Cancel
+				</ion-button>
+			</ion-item>
+		</form>
+	</ion-list>
+</ion-content>

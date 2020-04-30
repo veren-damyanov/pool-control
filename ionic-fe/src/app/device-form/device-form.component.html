@@ -1,0 +1,32 @@
+<ion-content>
+	<ion-list>
+		<form [formGroup]="form" (ngSubmit)="submitForm()">
+			<ion-item>
+				<ion-label>
+					Device
+				</ion-label>
+				<ion-label *ngIf="operation == 'edit'">
+					{{ form.value.name }}
+				</ion-label>
+				<ion-select *ngIf="operation == 'create'" okText="OK" cancelText="Cancel" formControlName="name">
+					<ion-select-option *ngFor="let name of available.names" value="{{ name }}">{{ name }}
+					</ion-select-option>
+				</ion-select>
+			</ion-item>
+			<ion-item>
+				<ion-label>GPIO</ion-label>
+				<ion-select okText="OK" cancelText="Cancel" formControlName="gpio">
+					<ion-select-option *ngFor="let gpio of available.gpios" value="{{ gpio }}">{{ gpio }}
+					</ion-select-option>
+				</ion-select>
+			</ion-item>
+
+			<ion-item>
+				<ion-button class="save_button" size="default" type="submit" fill="outline" slot="start" block>Save
+				</ion-button>
+				<ion-button class="cancel_button" size="default" fill="outline" block (click)="cancelModal()">Cancel
+				</ion-button>
+			</ion-item>
+		</form>
+	</ion-list>
+</ion-content>

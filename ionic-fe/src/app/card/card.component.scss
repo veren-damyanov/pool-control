@@ -1,0 +1,72 @@
+.icon {
+	font-size: 24px;
+	font-weight: bold;
+	color: #444;
+}
+  
+.dow-on {
+	font-weight: bold;
+	color: #333;
+}
+
+.dow-off {
+	color: #aaa
+}
+
+.card-item-time {
+	font-size: 20px;
+	color: #222;
+	--min-height: 40px;
+	--inner-padding-end: 0px;
+}
+
+.card-item-days {
+	font-size: 14px;
+	--min-height: 28px;
+}
+
+.card-item-value {
+	font-size: 16px;
+	--min-height: 28px;
+}
+
+.toolbar {
+	height: 50px;
+}
+
+#context-button {
+	color: #858585;
+	--padding-bottom: 0px;
+	--padding-top: 0px;
+	--padding-start: 0px;
+	--padding-end: 0px;
+	--border-radius: 50%;
+	width: 35px;
+	height: 35px;
+}
+
+.target-span {
+	font-weight: bold;
+	padding-left: 10px;
+	padding-right: 8px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.value-span {
+	font-weight: bold;
+	color: #3880ff;
+	padding-left: 8px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.weekdays-span {
+	padding-left: 7px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.blue {
+	color: #3880ff;
+}

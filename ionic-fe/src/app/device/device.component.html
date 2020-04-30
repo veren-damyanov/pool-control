@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+	<ion-toolbar>
+		<ion-title>
+			Device Configuration
+		</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+
+	<ion-card *ngIf="devices === null">
+		<ion-item>
+			<ion-spinner name="dots"></ion-spinner>
+		</ion-item>
+	</ion-card>
+	<ion-card *ngIf="devices != null && devices.length == 0">
+		<ion-item class="record-placeholder">
+			<span class="inline devices-padding">There are no devices available. Click  <ion-icon class="placeholder-icon" name="add-circle"></ion-icon> to create some.</span>
+		</ion-item>
+	</ion-card>
+
+	<ion-list>
+		<app-device-item *ngFor="let device of devices" [device]="device" [available]="available"></app-device-item>
+	</ion-list>
+
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+	<ion-fab-button [disabled]="available['names'].length == 0 || available['gpios'].length == 0" (click)="presentDeviceFormModal()">
+		<ion-icon name="add"></ion-icon>
+	</ion-fab-button>
+</ion-fab>

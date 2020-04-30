@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+	<ion-toolbar>
+		<ion-title>
+			Schedule Records
+		</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content id="content" [fullscreen]="true">
+
+	<ion-card *ngIf="records === null || inUse === null">
+		<ion-item>
+			<ion-spinner name="dots"></ion-spinner>
+		</ion-item>
+	</ion-card>
+	<ion-card *ngIf="inUse != null && inUse.length == 0">
+		<ion-item class="record-placeholder">
+			<span class="inline card-padding">There are no devices configured. Go to <a href="/devices">Devices</a> tab
+				to configure some.</span>
+		</ion-item>
+	</ion-card>
+	<ion-card *ngIf="records != null && records.length == 0 && inUse != null && inUse.length > 0">
+		<ion-item class="record-placeholder">
+			<span class="inline">There are no records available. Click <ion-icon class="placeholder-icon"
+					name="add-circle"></ion-icon> to create some.</span>
+		</ion-item>
+	</ion-card>
+	<app-card *ngFor="let record of records" [record]="record" [inUse]="inUse"></app-card>
+
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+	<ion-fab-button [disabled]="inUse === null || inUse.length == 0" (click)="presentFormModal()">
+		<ion-icon name="add"></ion-icon>
+	</ion-fab-button>
+</ion-fab>
