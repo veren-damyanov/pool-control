@@ -1,0 +1,8 @@
+# pyton bytecode stuff
+*.py[oc]
+
+# pickled stuff
+*.pkl
+
+# local BE settings customization (not the same as settings/local.py)
+sanic-be/poolctl/settings/_local.py

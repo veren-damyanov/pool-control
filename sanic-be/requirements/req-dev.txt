@@ -1,0 +1,3 @@
+-r req-testing.txt
+pylint
+mypy
