@@ -1,3 +1,7 @@
+"""
+Scheduler tasks module.
+
+"""
 from datetime import datetime
 
 from sanic.log import logger as log
@@ -13,7 +17,7 @@ def switch_device_on(device_manager: DeviceManager, record_obj: RecordContainer)
     device = device_manager.get_device_driver(record_obj.target)
     device.configure(record_obj.value)
     device.on()
-    print(f'Tick! switch_device_on({record_obj}): time {datetime.now()}')
+    log.info('Tick! switch_device_on(): %s time %s', record_obj, datetime.now())
 
 
 def switch_device_off(device_manager: DeviceManager, record_obj: RecordContainer):
@@ -22,4 +26,4 @@ def switch_device_off(device_manager: DeviceManager, record_obj: RecordContainer
         return
     device = device_manager.get_device_driver(record_obj.target)
     device.off()
-    print(f'Tick! switch_device_off({record_obj}): time {datetime.now()}')
+    log.info('Tick! switch_device_off(): %s time %s', record_obj, datetime.now())

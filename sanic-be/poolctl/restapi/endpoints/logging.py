@@ -3,7 +3,7 @@
 
 Exposes "POST /client-logs" endpoint for the client app to send logs.
 """
-
+from sanic.log import logger as log
 from sanic.response import json
 
 from poolctl.app import app
@@ -13,7 +13,7 @@ _ENDPOINT_URL = '/client-logs'
 
 
 def report_fe_logging_endpoint_availability():
-    print(_ENDPOINT_URL + ' endpoint imported and available')
+    log.info('%s endpoint imported and available', _ENDPOINT_URL)
 
 
 @app.route(_ENDPOINT_URL, methods=['POST'])

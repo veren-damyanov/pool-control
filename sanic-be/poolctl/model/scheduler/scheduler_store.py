@@ -2,6 +2,8 @@
 TODO:
 
 """
+# from datetime import datetime, timedelta
+
 from sanic.log import logger as log
 from apscheduler.schedulers.base import BaseScheduler
 
@@ -39,6 +41,21 @@ class SchedulerStore(SchedulerStoreT):
     def _schedule_job(self, record_obj):
         start_hour, start_minute = record_obj.start_at_hour_minute()
         end_hour, end_minute = record_obj.end_at_hour_minute()
+
+        # DEBUG purposes: setup a job 5 seconds from now regardless of
+        # the timing set in the schedule record, to speed up debugging.
+        #
+        # now = datetime.now()
+        # in_a_moment = now + timedelta(seconds=5)
+        # start_hour = in_a_moment.hour
+        # start_minute = in_a_moment.minute
+        # start_second = in_a_moment.second
+        #
+        # in_a_moment = now + timedelta(seconds=10)
+        # end_hour = in_a_moment.hour
+        # end_minute = in_a_moment.minute
+        # end_second = in_a_moment.second
+
         try:
             self._scheduler.add_job(
                 switch_device_on,
@@ -47,6 +64,7 @@ class SchedulerStore(SchedulerStoreT):
                 day_of_week=record_obj.dow,
                 hour=start_hour,
                 minute=start_minute,
+                # second=start_second,
                 id=record_obj.id + ':start',
                 name=record_obj.name,
                 replace_existing=True,
@@ -58,6 +76,7 @@ class SchedulerStore(SchedulerStoreT):
                 day_of_week=record_obj.dow,
                 hour=end_hour,
                 minute=end_minute,
+                # second=end_second,
                 id=record_obj.id + ':end',
                 name=record_obj.name,
                 replace_existing=True,
@@ -111,12 +130,12 @@ class SchedulerStore(SchedulerStoreT):
         try:
             self._scheduler.remove_job(pkey + ':start')
         except Exception as err:
-            print(f"Error trying to delete start_job={start_job}: {typeof(err)}: {err}")
+            log.error('Error trying to delete start_job=%r: %s: %s', start_job, typeof(err), err)
 
         try:
             self._scheduler.remove_job(pkey + ':end')
         except Exception as err:
-            print(f"Error trying to delete end_job={end_job}: {typeof(err)}: {err}")
+            log.error('Error trying to delete end_job=%r: %s: %s', start_job, typeof(err), err)
 
         start_job_none = self._scheduler.get_job(pkey + ':start')
         end_job_none = self._scheduler.get_job(pkey + ':end')

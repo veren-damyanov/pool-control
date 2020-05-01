@@ -11,6 +11,7 @@ from sanic_cors import CORS
 from sanic import Sanic
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+from poolctl import settings as cfg
 from poolctl.utils.async_stuff import all_tasks_to_close
 from poolctl.model.devices.manager import DeviceManager
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
@@ -43,6 +44,7 @@ def handle_404(request, exc):
 @app.listener('before_server_start')
 async def initialize_scheduler(app, loop):
     log.info('Server starting up...')
+    log.info('%r', {nm: getattr(cfg, nm) for nm in dir(cfg) if nm.isupper() and not nm.startswith('_')})
     app.runner = Runner.instance(loop)
     app.runner.launch()
     from poolctl.restapi.endpoints.records import report_records_ep_availability

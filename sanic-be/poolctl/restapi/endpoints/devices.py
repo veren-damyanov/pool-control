@@ -4,12 +4,19 @@
 TODO: describe briefly
 
 """
+from functools import lru_cache
 
 from sanic.log import logger as log
 from sanic.response import json
 
-from poolctl.app import app
-from poolctl.restapi.resources.devices import devices_resource
+from poolctl.app import app, Runner
+from poolctl.model.devices.manager import DeviceManager
+
+
+@lru_cache(maxsize=1)
+def devices_resource():
+    DeviceManager()
+    return Runner.instance().devices_resource
 
 
 def report_devices_ep_availability():

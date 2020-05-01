@@ -7,10 +7,9 @@ Each of these has ... TODO: describe briefly
 """
 from functools import lru_cache
 
-from sanic.log import logger
+from sanic.log import logger as log
 from sanic.exceptions import NotFound
 from sanic.response import json, html
-from sanic.log import logger as log
 
 from poolctl.app import app, Runner
 
@@ -22,7 +21,7 @@ def records_resource():
 
 @app.exception(NotFound)
 async def status_404(request, exc):
-    logger.warning('file not found (404): relative_url=%r path=%r', exc.relative_url, exc.path)
+    log.warning('file not found (404): relative_url=%r path=%r', exc.relative_url, exc.path)
     return json({
         'status': 'error',
         'message': f'not found: {exc.relative_url}',
@@ -35,7 +34,7 @@ def report_records_ep_availability():
 
 @app.route('/')
 async def test(request):
-    logger.info('request detected')
+    log.info('request detected')
     return html('<h3>PoolCtl app works! ;)<h3>')
 
 

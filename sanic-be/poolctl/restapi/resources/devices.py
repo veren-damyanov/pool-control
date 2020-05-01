@@ -13,15 +13,6 @@ from poolctl.model.exc import (
 from poolctl.model.devices.manager import DeviceManager
 from ._common import BaseResource, abort_400, abort_404, abort_409
 
-_devices_resource = None
-
-
-def devices_resource():
-    global _devices_resource
-    if not _devices_resource:
-        _devices_resource = DevicesResource(DeviceManager())
-    return _devices_resource
-
 
 class DevicesResource(BaseResource):
 
