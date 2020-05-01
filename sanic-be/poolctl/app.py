@@ -2,9 +2,11 @@
 Sanic application execution module.
 
 """
-from sanic import Sanic
-from sanic_cors import CORS
 from sanic.log import logger as log
+from sanic.exceptions import NotFound
+from sanic.response import json
+from sanic_cors import CORS
+from sanic import Sanic
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from poolctl.utils.async_stuff import all_tasks_to_close
@@ -12,6 +14,7 @@ from poolctl.model.devices.manager import DeviceManager
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
 from poolctl.restapi.resources.devices import DevicesResource
 from poolctl.restapi.resources.records import RecordsResource
+from poolctl.utils.misc import typeof
 
 
 def create_app() -> Sanic:
@@ -21,6 +24,15 @@ def create_app() -> Sanic:
 
 
 app = create_app()
+
+
+@app.exception(NotFound)
+def handle_404(request, exc):
+    log.warning('Not Found (404): %s', exc)
+    return json({
+        'status': 'error',
+        'message': str(exc),
+    }, status=404)
 
 
 @app.listener('before_server_start')
