@@ -15,11 +15,16 @@ export class CardComponent implements OnInit {
 	@Input() inUse;
 	private notify = gnotify;
 	private popover = null;
+	public formattedStartAt;
+	public formattedEndAt;
 
 	constructor(public popoverController: PopoverController) {
 	}
 
-	ngOnInit() { }
+	ngOnInit() {
+		this.formattedStartAt = this.formatTime(this.record.start_at);
+		this.formattedEndAt = this.formatTime(this.record.end_at);
+	}
 
 	async presentContextPopover(ev: any) {
 		console.info("presentContextPopover() creating card context menu")
@@ -33,14 +38,13 @@ export class CardComponent implements OnInit {
 		return await popover.present();
 	}
 
-	padTime(num) {
-		console.debug("padTime() called")
-		return ("00" + num).slice(-2)
-	}
-
 	formatTime(time) {
 		console.debug("formatTime() called")
-		// '1990-02-19T08:00+02:00'
+		// time: '1990-02-19T08:00+02:00'
+
+		function padTime(num) {
+			return ("00" + num).slice(-2)
+		}
 		var hour = +time.slice(11, 13);
 		var minute = +time.slice(14, 16);
 		var qualifier = 'AM';
@@ -53,6 +57,6 @@ export class CardComponent implements OnInit {
 			hour = hour - 12;
 			qualifier = 'PM';
 		}
-		return (this.padTime(hour) + ':' + this.padTime(minute) + ' ' + qualifier)
+		return (padTime(hour) + ':' + padTime(minute) + ' ' + qualifier)
 	}
 }

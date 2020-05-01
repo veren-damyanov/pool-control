@@ -23,15 +23,20 @@ class LoggingResource(BaseResource):
     }
     DEFAULT_LOGLEVEL = logging.INFO
 
-    client_log = logging.getLogger('frontend')
+    client_log = server_log.getChild('frontend')
 
     def post(self, request):
+
         payload = request.json
 
         try:
             log_level = payload.get('loglevel')
             timestamp = payload['timestamp']
-            content = json.dumps(payload['args'])
+            msg_payload = payload['args']
+            if isinstance(msg_payload, list):
+                logline = '|'.join(map(str, msg_payload))
+            else:
+                logline = json.dumps(payload)
 
         except KeyError as err:
             server_log.error("Bad front-end payload=%r (missing key %s)", payload, err)
@@ -43,7 +48,7 @@ class LoggingResource(BaseResource):
                 server_log.error("Unrecognized front-end log_level=%r", log_level)
                 log_level_code = self.DEFAULT_LOGLEVEL
 
-            self.client_log._log(log_level_code, "(%s) %s", (timestamp, content))
+            self.client_log.log(log_level_code, "FRONT: (%s) %s", timestamp, logline)
 
         finally:
             return {'status': 'success'}

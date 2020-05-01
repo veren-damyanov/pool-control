@@ -1,7 +1,7 @@
 <ion-card>
 	<ion-card-header>
 		<ion-item class="card-item-time ion-no-padding" lines="none">
-			{{ formatTime(record.start_at) }} - {{ formatTime(record.end_at) }}
+			{{ formattedStartAt }} - {{ formattedEndAt }}
 			<ion-buttons slot="end">
 				<ion-button id="context-button" size="small" (click)="presentContextPopover($event)">
 					<ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
