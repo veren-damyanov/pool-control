@@ -3,19 +3,12 @@ Web controller code for the "Pool Controller" application.
 """
 
 from copy import copy
-from functools import lru_cache
 
 from sanic.response import json
 
 from poolctl.utils.misc import check_type, random_string, Undef
 from poolctl.model.scheduler._types import SchedulerStoreT
-from poolctl.app import Runner
 from ._common import abort_404, BaseResource
-
-
-@lru_cache(maxsize=1)
-def records_resource():
-    return Runner.instance().records_resource
 
 
 class RecordsResource(BaseResource):

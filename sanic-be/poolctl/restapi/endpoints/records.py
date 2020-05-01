@@ -5,13 +5,19 @@ Records denotes pool controller timetable/schedule records.
 Each of these has ... TODO: describe briefly
 
 """
+from functools import lru_cache
+
 from sanic.log import logger
 from sanic.exceptions import NotFound
 from sanic.response import json, html
 from sanic.log import logger as log
 
-from poolctl.app import app
-from poolctl.restapi.resources.records import records_resource
+from poolctl.app import app, Runner
+
+
+@lru_cache(maxsize=1)
+def records_resource():
+    return Runner.instance().records_resource
 
 
 @app.exception(NotFound)
