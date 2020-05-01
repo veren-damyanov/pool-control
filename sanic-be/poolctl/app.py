@@ -30,8 +30,10 @@ async def initialize_scheduler(app, loop):
     app.runner.launch()
     from poolctl.restapi.endpoints.records import report_records_ep_availability
     from poolctl.restapi.endpoints.devices import report_devices_ep_availability
+    from poolctl.restapi.endpoints.logging import report_fe_logging_endpoint_availability
     report_records_ep_availability()
     report_devices_ep_availability()
+    report_fe_logging_endpoint_availability()
 
 
 @app.listener('after_server_stop')
