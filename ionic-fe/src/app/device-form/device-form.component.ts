@@ -26,7 +26,7 @@ export class DeviceFormComponent implements OnInit {
 		if (this.operation == 'create') {
 			var firstName = this.available.names[0];
 			var firstGpio = this.available.gpios[0];
-			device = { 'name': firstName, 'gpio': firstGpio };
+			device = { 'name': firstName, 'gpio': firstGpio, 'kind': this.getKind(firstName) };
 		}
 		if (this.operation == 'edit') {
 			device = this.device;
@@ -34,6 +34,19 @@ export class DeviceFormComponent implements OnInit {
 			this.available['gpios'].sort((x, y) => { return +x - +y });
 		}
 		this.populateForm(device);
+	}
+
+	getKind(deviceName) {
+		var deviceKind = deviceName.slice(0, 1);
+		if (deviceKind == 'P') {
+			return 'pump'
+		} else if (deviceKind == 'L') {
+			return 'light'
+		} else if (deviceKind == 'D') {
+			return 'relay'
+		} else if (deviceKind == 'T') {
+			return 'heat' // FIXME: Not supported by backend yet!
+		}
 	}
 
 	cancelModal() {
@@ -47,6 +60,7 @@ export class DeviceFormComponent implements OnInit {
 		this.form = this.formBuilder.group({
 			name: [device.name, Validators.required],
 			gpio: [device.gpio.toString(), Validators.required],
+			kind: [device.kind, Validators.required]
 		});
 	}
 

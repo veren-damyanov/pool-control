@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
 	public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
 	constructor(
-		private customConsole: ConsoleService,
+		// private customConsole: ConsoleService,
 		private platform: Platform,
 		private splashScreen: SplashScreen,
 		private statusBar: StatusBar
