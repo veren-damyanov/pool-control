@@ -16,9 +16,10 @@ from poolctl.model.devices.manager import DeviceManager
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
 from poolctl.restapi.resources.devices import DevicesResource
 from poolctl.restapi.resources.records import RecordsResource
-from poolctl._logging import CorsFilter
+from poolctl._logging import CorsFilter, LevelFilter
 
 logging.getLogger('sanic.root').addFilter(CorsFilter())
+logging.getLogger('sanic.access').addFilter(LevelFilter(logging.WARNING))
 
 
 def create_app() -> Sanic:
