@@ -2,6 +2,8 @@
 Sanic application execution module.
 
 """
+import logging
+
 from sanic.log import logger as log
 from sanic.exceptions import NotFound
 from sanic.response import json
@@ -14,7 +16,9 @@ from poolctl.model.devices.manager import DeviceManager
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
 from poolctl.restapi.resources.devices import DevicesResource
 from poolctl.restapi.resources.records import RecordsResource
-from poolctl.utils.misc import typeof
+from poolctl._logging import CorsFilter
+
+logging.getLogger('sanic.root').addFilter(CorsFilter())
 
 
 def create_app() -> Sanic:
