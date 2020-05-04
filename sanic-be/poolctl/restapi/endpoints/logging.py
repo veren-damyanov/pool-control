@@ -8,14 +8,16 @@ from sanic.response import json
 
 from poolctl.app import app
 from poolctl.restapi.resources.logging import frontend_logging_res
+from poolctl.restapi.endpoints import API_ROOT
 
-_ENDPOINT_URL = '/client-logs'
+##_ENDPOINT_URL = '/client-logs'
 
+ep_root = API_ROOT + '/client-logs'
 
 def report_fe_logging_endpoint_availability():
-    log.info('%s endpoint imported and available', _ENDPOINT_URL)
+    log.info('%s endpoint imported and available', ep_root)
 
 
-@app.route(_ENDPOINT_URL, methods=['POST'])
+@app.route(ep_root, methods=['POST'])
 def do_post(request):
     return json(frontend_logging_res.post(request))

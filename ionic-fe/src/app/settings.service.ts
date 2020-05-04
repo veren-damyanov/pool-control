@@ -33,6 +33,6 @@ export class SettingsService {
 	}
 
 	getUrl() {
-		return 'http://' + this.getIP() + ':' + this.getPort()
+		return 'http://' + this.getIP() + ':' + this.getPort() + '/api';
 	}
 }

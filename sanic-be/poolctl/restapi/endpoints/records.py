@@ -12,6 +12,9 @@ from sanic.exceptions import NotFound
 from sanic.response import json, html
 
 from poolctl.app import app, Runner
+from poolctl.restapi.endpoints import API_ROOT
+
+ep_root = API_ROOT + '/records'
 
 
 @lru_cache(maxsize=1)
@@ -29,7 +32,7 @@ async def status_404(request, exc):
 
 
 def report_records_ep_availability():
-    log.info('/records endpoint imported and available')
+    log.info(ep_root + ' endpoint imported and available')
 
 
 @app.route('/')
@@ -38,7 +41,7 @@ async def test(request):
     return html('<h3>PoolCtl app works! ;)<h3>')
 
 
-@app.route('/records', methods=['GET', 'POST', 'OPTIONS'])
+@app.route(ep_root, methods=['GET', 'POST', 'OPTIONS'])
 def get_all_or_create(request):
     method = request.method.upper()
     func_map = {
@@ -48,16 +51,16 @@ def get_all_or_create(request):
     return func_map[method](request)
 
 
-@app.route('/records/<pkey:string>', methods=['GET'])
+@app.route(ep_root + '/<pkey:string>', methods=['GET'])
 def get_one(request, pkey):
     return records_resource().get(request, pkey)
 
 
-@app.route('/records/<pkey:string>', methods=['PUT'])
+@app.route(ep_root + '/<pkey:string>', methods=['PUT'])
 def put_one(request, pkey):
     return records_resource().put(request, pkey)
 
 
-@app.route('/records/<pkey:string>', methods=['DELETE', 'OPTIONS'])
+@app.route(ep_root + '/<pkey:string>', methods=['DELETE', 'OPTIONS'])
 def delete_one(request, pkey):
     return records_resource().delete(request, pkey)
