@@ -37,6 +37,7 @@ export class DeviceFormComponent implements OnInit {
 	}
 
 	getKind(deviceName) {
+		console.debug('getKind() called')
 		var deviceKind = deviceName.slice(0, 1);
 		if (deviceKind == 'P') {
 			return 'pump'
@@ -47,6 +48,11 @@ export class DeviceFormComponent implements OnInit {
 		} else if (deviceKind == 'T') {
 			return 'heat' // FIXME: Not supported by backend yet!
 		}
+	}
+	onDeviceChange(deviceName) {
+		console.debug('onDeviceChange() called')
+		var kind = this.getKind(deviceName)
+		this.form.controls.kind.value = kind
 	}
 
 	cancelModal() {

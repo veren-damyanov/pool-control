@@ -8,7 +8,8 @@
 				<ion-label *ngIf="operation == 'edit'">
 					{{ form.value.name }}
 				</ion-label>
-				<ion-select *ngIf="operation == 'create'" okText="OK" cancelText="Cancel" formControlName="name">
+				<ion-select *ngIf="operation == 'create'" okText="OK" cancelText="Cancel" formControlName="name"
+					(ionChange)="onDeviceChange($event.target.value)">
 					<ion-select-option *ngFor="let name of available.names" value="{{ name }}">{{ name }}
 					</ion-select-option>
 				</ion-select>
