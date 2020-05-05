@@ -6,7 +6,7 @@
 
 - name: nginx default host config
   template:
-    src: nginx-default.j2  # revisit
+    src: nginx-default.j2  # TODO: revisit
     dest: /etc/nginx/sites-available/default
   notify: restart nginx
 
@@ -17,13 +17,13 @@
     state: link
   notify: restart nginx
 
-- name: nginx poolctl host config
+- name: setup nginx poolctl site config
   template:
     src: nginx-poolctl.j2
     dest: /etc/nginx/sites-available/poolctl
   notify: restart nginx
 
-- name: create link to nginx poolctl config
+- name: enable nginx poolctl site
   file:
     src: /etc/nginx/sites-available/poolctl
     dest: /etc/nginx/sites-enabled/poolctl

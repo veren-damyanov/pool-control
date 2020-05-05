@@ -5,9 +5,6 @@ server {
     listen [::]:80;
 
     server_name  poolctl.local;
-    # root /opt/poolctl/webroot/www;
-
-    #index  index.html;
 
     access_log /var/log/poolctl/access.log;
     error_log  /var/log/poolctl/error.log;
@@ -22,11 +19,6 @@ server {
         include proxy_params;
         proxy_pass http://localhost:8000;
     }
-
-    #location ~ /(devices|records|client-logs).* {
-    #    include proxy_params;
-    #    proxy_pass http://localhost:8000;
-    #}
 
     location ~ .* {
         index  index.html;

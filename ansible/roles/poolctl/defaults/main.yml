@@ -1,5 +1,11 @@
+#: Default variables. (Override in vars/main.yml.)
+
+#: Server (=pool) time zone. This is important! RPis usually come
+#: with Europe/London default setup which creates problems ;)
 timezone: Europe/Sofia
-pyvenv_home: /home/pi/poolctl-venv
-environment_name: stage  # local, intergration, stage, prod
 
+#: Location for the python venv for the back-end
+pyvenv_home: /opt/virtualenvs/poolctl
 
+#: The env name considered by the REST API back-end (sanic-be)
+environment_name: stage  # local, integration, stage, prod

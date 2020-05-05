@@ -14,12 +14,21 @@
       - python3.7-venv
       - python3-pip
       - python3.7-dev
-      - pigpiod
       - nginx
     state: latest
 
-- name: start pgpiod service
-  systemd:
-    name: pigpiod
-    enabled: yes
-    state: started
+- name:
+  apt:
+    name:
+      # pigpio-tools not strictly necessary but might help during troubleshooting
+      - pigpio-tools
+      - pigpiod
+    state: latest
+  notify: restart pigpiod
+
+- name: tune pgpiod startup arguments
+  lineinfile:
+    path: /lib/systemd/system/pigpiod.service
+    regexp: '^\s*ExecStart\s*='
+    line: ExecStart=/usr/bin/pigpiod -s 10 -b 200 -f
+  notify: restart pigpiod

@@ -5,12 +5,13 @@
     recurse: yes
 
 - name: archive sanic-be
+  delegate_to: localhost
+  run_once: yes
   archive:
     path: ../../../sanic-be
     dest: /tmp/sanic-be.gz
-  delegate_to: localhost
 
-- name: unarchive sanic-be.gz
+- name: upload and extract sanic-be.gz
   unarchive:
     src: /tmp/sanic-be.gz
     dest: /opt/poolctl
@@ -21,7 +22,7 @@
     dest: /usr/local/bin/virtualenv-custom
     mode: 0775
 
-- name: create virtualenv, update pip and install setuptools
+- name: create virtualenv, update pip and setuptools
   pip:
     virtualenv: "{{ pyvenv_home }}"
     virtualenv_command: virtualenv-custom
@@ -30,7 +31,7 @@
       - setuptools
     state: latest
 
-- name: make sure no wheel is present
+- name: make sure wheel is not present
   pip:
     virtualenv: "{{ pyvenv_home }}"
     name:

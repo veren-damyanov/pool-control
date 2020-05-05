@@ -1,7 +1,13 @@
 - name: restart nginx
-  service:
+  systemd:
     name: nginx
     state: restarted
+
+- name: restart pigpiod
+  systemd:
+    name: pigpiod
+    state: restarted
+    enabled: yes
 
 - name: reboot
   reboot:

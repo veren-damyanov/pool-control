@@ -1,3 +1,5 @@
 #! /bin/sh
+#  In the actual call ansible does, $1 looks like '-p/usr/bin/python'
+#  and 'python -m venv' does not understand (and does not need) it.
 
 /usr/bin/python3.7 -m venv "$2"
