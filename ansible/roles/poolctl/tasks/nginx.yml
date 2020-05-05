@@ -1,0 +1,31 @@
+- name: create poolctl log directory
+  file:
+    path: /var/log/poolctl
+    state: directory
+    owner: www-data
+
+- name: nginx default host config
+  template:
+    src: nginx-default.j2  # revisit
+    dest: /etc/nginx/sites-available/default
+  notify: restart nginx
+
+- name: create link to nginx default config
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  notify: restart nginx
+
+- name: nginx poolctl host config
+  template:
+    src: nginx-poolctl.j2
+    dest: /etc/nginx/sites-available/poolctl
+  notify: restart nginx
+
+- name: create link to nginx poolctl config
+  file:
+    src: /etc/nginx/sites-available/poolctl
+    dest: /etc/nginx/sites-enabled/poolctl
+    state: link
+  notify: restart nginx

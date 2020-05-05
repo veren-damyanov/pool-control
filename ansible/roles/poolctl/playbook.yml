@@ -1,0 +1,4 @@
+- hosts: '{{ ehosts }}'
+  gather_facts: no
+  roles:
+    - role: poolctl

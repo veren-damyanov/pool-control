@@ -1,0 +1,36 @@
+# poolctl web server setup
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name  poolctl.local;
+    # root /opt/poolctl/webroot/www;
+
+    #index  index.html;
+
+    access_log /var/log/poolctl/access.log;
+    error_log  /var/log/poolctl/error.log;
+
+    client_max_body_size 2M;
+
+    location ^~ /static/ {
+	root /opt/poolctl/webroot;
+        try_files $uri =404;
+    }
+    location ^~ /api/ {
+        include proxy_params;
+        proxy_pass http://localhost:8000;
+    }
+
+    #location ~ /(devices|records|client-logs).* {
+    #    include proxy_params;
+    #    proxy_pass http://localhost:8000;
+    #}
+
+    location ~ .* {
+        index  index.html;
+        root /opt/poolctl/webroot/www;
+        try_files $uri $uri/ /index.html;
+    }
+}

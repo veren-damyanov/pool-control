@@ -1,0 +1,5 @@
+timezone: Europe/Sofia
+pyvenv_home: /home/pi/poolctl-venv
+environment_name: stage  # local, intergration, stage, prod
+
+

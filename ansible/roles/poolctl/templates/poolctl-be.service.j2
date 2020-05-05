@@ -1,0 +1,11 @@
+[Unit]
+Description=Poolctl sanic backend service.
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/poolctl/sanic-be
+ExecStart={{ pyvenv_home }}/bin/python -m poolctl
+
+[Install]
+WantedBy=multi-user.target
+

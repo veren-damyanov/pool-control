@@ -1,0 +1,25 @@
+- name: create webroot and static dirs
+  file:
+    path: /opt/poolctl/webroot/static
+    state: directory
+    recurse: yes
+
+- name: ensure webapp is built
+  shell: ionic build --engine=browser --prod
+  args:
+    chdir: ../../../ionic-fe
+    creates: ../../../ionic-fe/www
+  delegate_to: localhost
+  run_once: yes
+
+- name: archive www
+  archive:
+    path: ../../../ionic-fe/www
+    dest: /tmp/www.gz
+  delegate_to: localhost
+
+- name: unarchive www.gz
+  unarchive:
+    src: /tmp/www.gz
+    dest: /opt/poolctl/webroot
+

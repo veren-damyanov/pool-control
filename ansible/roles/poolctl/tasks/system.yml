@@ -1,0 +1,25 @@
+- name: set proper timezone
+  timezone:
+    name: "{{ timezone }}"
+
+- name: apt full upgrade
+  apt:
+    update_cache: yes
+    upgrade: full
+
+- name: apt update and install pigpiod
+  apt:
+    name:
+      - python3-distutils
+      - python3.7-venv
+      - python3-pip
+      - python3.7-dev
+      - pigpiod
+      - nginx
+    state: latest
+
+- name: start pgpiod service
+  systemd:
+    name: pigpiod
+    enabled: yes
+    state: started
