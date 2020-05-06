@@ -8,6 +8,13 @@
     name: pigpiod
     state: restarted
     enabled: yes
+    daemon_reload: yes
+
+- name: restart poolctl service
+  systemd:
+    name: poolctl-restapi
+    state: restarted
+    daemon_reload: yes
 
 - name: reboot
   reboot:

@@ -1,11 +1,12 @@
 - name: set proper timezone
   timezone:
-    name: "{{ timezone }}"
+    name: '{{ timezone }}'
 
-- name: apt full upgrade
-  apt:
-    update_cache: yes
-    upgrade: full
+# This one should be a part of a baseline setup
+#- name: apt full upgrade
+#  apt:
+#    update_cache: yes
+#    upgrade: full
 
 - name: apt update and install pigpiod
   apt:
@@ -17,7 +18,7 @@
       - nginx
     state: latest
 
-- name:
+- name: install pigpiod and tools
   apt:
     name:
       # pigpio-tools not strictly necessary but might help during troubleshooting

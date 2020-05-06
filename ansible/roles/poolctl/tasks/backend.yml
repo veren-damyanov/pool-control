@@ -1,20 +1,25 @@
+---
+#: Setup sanic back-end service
+
 - name: create poolctl dir
   file:
     path: /opt/poolctl
     state: directory
     recurse: yes
 
-- name: archive sanic-be
-  delegate_to: localhost
-  run_once: yes
-  archive:
-    path: ../../../sanic-be
-    dest: /tmp/sanic-be.gz
-
-- name: upload and extract sanic-be.gz
-  unarchive:
-    src: /tmp/sanic-be.gz
-    dest: /opt/poolctl
+- name: sync local sanic-be directory to remote
+  synchronize:
+    src: ../../../sanic-be
+    dest: /opt/poolctl/
+    checksum: yes  # compare based on checksums rather than timestamps
+    rsync_opts:
+      - '--exclude="*.pyc"'
+      - '--exclude=__pycache__'
+      - '--exclude=_local.py'
+      - '--delete'
+      - '--ignore-errors'
+      - '--force'
+  notify: restart poolctl service
 
 - name: prepare custom virtualenv executable
   template:
@@ -24,7 +29,7 @@
 
 - name: create virtualenv, update pip and setuptools
   pip:
-    virtualenv: "{{ pyvenv_home }}"
+    virtualenv: '{{ pyvenv_home }}'
     virtualenv_command: virtualenv-custom
     name:
       - pip
@@ -33,15 +38,16 @@
 
 - name: make sure wheel is not present
   pip:
-    virtualenv: "{{ pyvenv_home }}"
+    virtualenv: '{{ pyvenv_home }}'
     name:
       - wheel
     state: absent
 
 - name: install requirements in the virtualenv
   pip:
-    virtualenv: "{{ pyvenv_home }}"
+    virtualenv: '{{ pyvenv_home }}'
     requirements: /opt/poolctl/sanic-be/requirements/req-runtime.txt
+  notify: restart poolctl service
 
 - name: set environment name variable creation
   template:
@@ -53,10 +59,11 @@
   template:
     src: poolctl-be.service.j2
     dest: /lib/systemd/system/poolctl-restapi.service
+  notify: restart poolctl service
 
 - name: enable and start poolctl-restapi service
   systemd:
     name: poolctl-restapi
-    state: restarted
+    state: started
     enabled: yes
     daemon_reload: yes
