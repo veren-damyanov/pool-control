@@ -4,7 +4,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name  poolctl.local;
+    server_name  {{ site_hostname }};
 
     access_log /var/log/poolctl/access.log;
     error_log  /var/log/poolctl/error.log;

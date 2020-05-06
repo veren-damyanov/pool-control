@@ -4,13 +4,16 @@
     state: directory
     owner: www-data
 
-- name: nginx default host config
+- name: setup nginx default host config
   template:
-    src: nginx-default.j2  # TODO: revisit
+    # src: nginx-default.j2  # TODO: revisit
+    src: nginx-poolctl.j2
     dest: /etc/nginx/sites-available/default
   notify: restart nginx
+  vars:
+    site_hostname: _
 
-- name: create link to nginx default config
+- name: enable nginx default site
   file:
     src: /etc/nginx/sites-available/default
     dest: /etc/nginx/sites-enabled/default
@@ -22,6 +25,8 @@
     src: nginx-poolctl.j2
     dest: /etc/nginx/sites-available/poolctl
   notify: restart nginx
+  vars:
+    site_hostname: '{{ nginx_hostname }}'
 
 - name: enable nginx poolctl site
   file:

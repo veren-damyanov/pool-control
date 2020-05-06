@@ -12,6 +12,9 @@ poolctl_user: _poolctl
 poolctl_group: _poolctl
 poolctl_home: /opt/poolctl
 
+#: Default nginx site name
+nginx_hostname: poolctl.local
+
 #: Location for the python venv for the back-end
 pyvenv_home: '{{ poolctl_home }}/venv'
 

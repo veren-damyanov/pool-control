@@ -1,8 +1,8 @@
-#- name: system configurations
-#  include: system.yml
+- name: system configurations
+  include: system.yml
 
-#- name: backend configurations
-#  include: backend.yml
+- name: backend configurations
+  include: backend.yml
 
 - name: frontend configurations
   include: frontend.yml
