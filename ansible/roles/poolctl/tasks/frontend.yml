@@ -1,9 +1,9 @@
 ---
 #: Prepare and transfer ionic front-end JS app
 
-- name: create webroot and static dirs
+- name: create poolctl and webroot dirs
   file:
-    path: /opt/poolctl/webroot/static
+    path: /opt/poolctl/webroot/
     state: directory
     recurse: yes
 
@@ -24,4 +24,13 @@
       - '--delete'
       - '--ignore-errors'
       - '--force'
-  notify: restart poolctl service
+
+- name: sync local static directory to remote
+  synchronize:
+    src: ../../../resources/static
+    dest: /opt/poolctl/webroot/
+    checksum: yes  # compare based on checksums rather than timestamps
+    rsync_opts:
+      - '--delete'
+      - '--ignore-errors'
+      - '--force'
