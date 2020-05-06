@@ -1,11 +1,23 @@
-- name: system configurations
-  include: system.yml
+#- name: system configurations
+#  include: system.yml
 
-- name: backend configurations
-  include: backend.yml
+#- name: backend configurations
+#  include: backend.yml
 
 - name: frontend configurations
   include: frontend.yml
 
 - name: nginx configurations
   include: nginx.yml
+
+- name: set proper permissins on poolctl home
+  #: See https://superuser.com/questions/1024677/ansible-how-to-recursively-set-directory-and-file-permissions
+  file:
+    path: '{{ poolctl_home }}'
+    owner: '{{ poolctl_user }}'
+    group: '{{ poolctl_group }}'
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+
+- name: system configurations
+  include: lockdown.yml

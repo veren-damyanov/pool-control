@@ -11,6 +11,7 @@
 - name: apt update and install pigpiod
   apt:
     name:
+      - python3.7
       - python3-distutils
       - python3.7-venv
       - python3-pip
@@ -33,3 +34,20 @@
     regexp: '^\s*ExecStart\s*='
     line: ExecStart=/usr/bin/pigpiod -s 10 -b 200 -f
   notify: restart pigpiod
+
+- name: create system group _poolctl
+  group:
+    name: '{{ poolctl_group }}'
+    system: yes
+
+- name: create system user _poolctl
+  user:
+    name: '{{ poolctl_user }}'
+    system: yes
+    home: '{{ poolctl_home }}'
+    shell: /bin/false
+    group: '{{ poolctl_group }}'
+    groups:
+      - spi
+      - i2c
+      - gpio

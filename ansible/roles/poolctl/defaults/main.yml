@@ -4,8 +4,19 @@
 #: with Europe/London default setup which creates problems ;)
 timezone: Europe/Sofia
 
-#: Location for the python venv for the back-end
-pyvenv_home: /opt/virtualenvs/poolctl
-
 #: The env name considered by the REST API back-end (sanic-be)
-environment_name: stage  # local, integration, stage, prod
+environment_name: stage  # integration, stage, prod (also local if necessary)
+
+#: The poolctl system userm group and home directory
+poolctl_user: _poolctl
+poolctl_group: _poolctl
+poolctl_home: /opt/poolctl
+
+#: Location for the python venv for the back-end
+pyvenv_home: '{{ poolctl_home }}/venv'
+
+#: poolctl apps distribution home
+dist_home: '{{ poolctl_home }}/dist'
+
+#: default password to be set
+defaut_pass: $6$UiwEdWg2IzXeWSwF$AWz/ZiUoLXXplgjyZ.coECvyFxLOx6JMu5DB7emjICGVwpuOsYwtZLYzprlWLEso.x9sOmZHkP.0RvtJsQVh./

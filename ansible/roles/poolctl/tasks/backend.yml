@@ -1,16 +1,22 @@
 ---
 #: Setup sanic back-end service
 
-- name: create poolctl dir
+- name: create poolctl app distribution directory
   file:
-    path: /opt/poolctl
+    path: '{{ dist_home }}'
+    state: directory
+    recurse: yes
+
+- name: create poolctl bin directory
+  file:
+    path: '{{ poolctl_home }}/bin'
     state: directory
     recurse: yes
 
 - name: sync local sanic-be directory to remote
   synchronize:
     src: ../../../sanic-be
-    dest: /opt/poolctl/
+    dest: '{{ dist_home }}'
     checksum: yes  # compare based on checksums rather than timestamps
     rsync_opts:
       - '--exclude="*.pyc"'
@@ -24,13 +30,13 @@
 - name: prepare custom virtualenv executable
   template:
     src: virtualenv-custom.j2
-    dest: /usr/local/bin/virtualenv-custom
+    dest: '{{ poolctl_home }}/bin/virtualenv-custom'
     mode: 0775
 
 - name: create virtualenv, update pip and setuptools
   pip:
     virtualenv: '{{ pyvenv_home }}'
-    virtualenv_command: virtualenv-custom
+    virtualenv_command: '{{ poolctl_home }}/bin/virtualenv-custom'
     name:
       - pip
       - setuptools
@@ -46,19 +52,25 @@
 - name: install requirements in the virtualenv
   pip:
     virtualenv: '{{ pyvenv_home }}'
-    requirements: /opt/poolctl/sanic-be/requirements/req-runtime.txt
+    requirements: '{{ dist_home }}/sanic-be/requirements/req-runtime.txt'
   notify: restart poolctl service
 
 - name: set environment name variable creation
   template:
     src: poolctl.sh.j2
     dest: /etc/profile.d/poolctl.sh
+    owner: root
+    group: root
+    mode: 0644
   notify: reboot
 
 - name: create sanic systemd script
   template:
     src: poolctl-be.service.j2
     dest: /lib/systemd/system/poolctl-restapi.service
+    owner: root
+    group: root
+    mode: 0644
   notify: restart poolctl service
 
 - name: enable and start poolctl-restapi service

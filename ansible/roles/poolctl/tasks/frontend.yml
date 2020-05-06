@@ -3,7 +3,7 @@
 
 - name: create poolctl and webroot dirs
   file:
-    path: /opt/poolctl/webroot/
+    path: '{{ dist_home }}/webroot'
     state: directory
     recurse: yes
 
@@ -18,7 +18,7 @@
 - name: sync local www directory to remote
   synchronize:
     src: ../../../ionic-fe/www
-    dest: /opt/poolctl/webroot/
+    dest: '{{ dist_home }}/webroot/'
     checksum: yes  # compare based on checksums rather than timestamps
     rsync_opts:
       - '--delete'
@@ -28,7 +28,7 @@
 - name: sync local static directory to remote
   synchronize:
     src: ../../../resources/static
-    dest: /opt/poolctl/webroot/
+    dest: '{{ dist_home }}/webroot/'
     checksum: yes  # compare based on checksums rather than timestamps
     rsync_opts:
       - '--delete'

@@ -12,7 +12,7 @@ server {
     client_max_body_size 2M;
 
     location ^~ /static/ {
-	root /opt/poolctl/webroot;
+	root {{ dist_home }}/webroot;
         try_files $uri =404;
     }
     location ^~ /api/ {
@@ -22,7 +22,7 @@ server {
 
     location ~ .* {
         index  index.html;
-        root /opt/poolctl/webroot/www;
+        root {{ dist_home }}/webroot/www;
         try_files $uri $uri/ /index.html;
     }
 }
