@@ -17,10 +17,6 @@ from poolctl.model.devices.manager import DeviceManager
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
 from poolctl.restapi.resources.devices import DevicesResource
 from poolctl.restapi.resources.records import RecordsResource
-from poolctl._logging import CorsFilter, LevelFilter
-
-logging.getLogger('sanic.root').addFilter(CorsFilter())
-logging.getLogger('sanic.access').addFilter(LevelFilter(logging.WARNING))
 
 
 def create_app() -> Sanic:
@@ -43,6 +39,8 @@ def handle_404(request, exc):
 
 @app.listener('before_server_start')
 async def initialize_scheduler(app, loop):
+    from poolctl.settings import _logging
+    _logging.announce_logging_availability()
     log.info('Server starting up...')
     log.info('%r', {nm: getattr(cfg, nm) for nm in dir(cfg) if nm.isupper() and not nm.startswith('_')})
     app.runner = Runner.instance(loop)

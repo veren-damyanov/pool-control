@@ -41,8 +41,10 @@ POOL_TIMEZONE = None  # some of the files imported below may override this.
 
 exec(f'from .{ENVIRONMENT_BASE} import *')
 
-try:  from ._local import *
-except ModuleNotFoundError:  pass
+try:
+    from ._local import *
+except ModuleNotFoundError:
+    pass
 
 POOL_TZ = determine_timezone(POOL_TIMEZONE)
 assert POOL_TZ, 'FATAL: Could NOT determine server timezone'

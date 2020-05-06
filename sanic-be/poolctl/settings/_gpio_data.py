@@ -18,8 +18,8 @@ GPIO_TABLE = (
     (23, 11, 'SCLK'),
     (24, 8, 'CE0'),
     (26, 7, 'CE1'),
-    # (27, 0, 'ID_SD'),  # gpiozero docs do not show this as 'GPIO0', only as 'ID SD'
-    (28, 1, 'ID_SC'),
+    # (27, 0, 'ID_SD'),  # gpiozero docs do not show this as 'GPIO-0', only as 'ID SD'
+    # (28, 1, 'ID_SC'),  # pigpiod setting  GPIO-1 mode raises permission error (issue #15)
     (29, 5, None),
     (31, 6, None),
     (32, 12, 'PWM0'),
