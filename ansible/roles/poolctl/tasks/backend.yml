@@ -1,6 +1,14 @@
 ---
 #: Setup sanic back-end service
 
+- name: create poolctl log directory
+  file:
+    path: /var/log/poolctl
+    state: directory
+    owner: root
+    group: www-data
+    mode: 0775
+
 - name: create poolctl app distribution directory
   file:
     path: '{{ dist_home }}'

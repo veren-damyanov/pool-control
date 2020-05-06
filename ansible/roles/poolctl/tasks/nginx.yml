@@ -1,8 +1,5 @@
-- name: create poolctl log directory
-  file:
-    path: /var/log/poolctl
-    state: directory
-    owner: www-data
+---
+#: nginx setup
 
 - name: setup nginx default host config
   template:

@@ -51,3 +51,4 @@
       - spi
       - i2c
       - gpio
+      - www-data
