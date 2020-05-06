@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SettingsService } from './settings.service';
 import { Observable, of } from "rxjs";
+import { ToastController } from '@ionic/angular';
 
 import * as moment from 'moment';
 
@@ -22,7 +23,7 @@ export class ConsoleService implements Console {
 	private orig: Console;
 	private user: object;
 
-	constructor(private http: HttpClient, private settingsService: SettingsService) {
+	constructor(private http: HttpClient, private settingsService: SettingsService, public toastController: ToastController) {
 		if (!this.orig) {
 			console.warn("REPLACING console object...")
 			this.orig = console
@@ -59,9 +60,22 @@ export class ConsoleService implements Console {
 		return this.http.post<any>(this.settingsService.getUrl() + '/client-logs', payload, { headers })
 	}
 
+	async presentToast(args) {
+		if (args[1].hasOwnProperty('statusText')) {
+			args[1] = args[1].statusText
+		}
+		if (args[1].message && args[1].message.includes('URI is malformed')) {
+			args = ['Could not connect to server']
+		}
+		const toast = await this.toastController.create({
+			message: args.join(' '),
+			duration: 5000
+		});
+		toast.present();
+	}
+
 	private _sendMessage(loglevel, args): void {
 		console = this.orig  // switch to original console to avoid recursion
-
 		const reqPayload = {
 			'timestamp': moment().format(DATE_FMT_4LOG),
 			'loglevel': loglevel,
@@ -71,9 +85,12 @@ export class ConsoleService implements Console {
 		this.postLogs(reqPayload).subscribe(result => {
 		}, err => {
 			if (err.status !== 0) {  // if err.url is null, then the server is down
-				console.error("Failed to send log message:", err)
+				console.error("Failed to send log message", err)
 			}
 		})
+		if (loglevel == 'error') {
+			this.presentToast(args)
+		}
 		console = this  // switch back to self as default console
 	}
 
