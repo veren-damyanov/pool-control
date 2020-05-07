@@ -1,3 +1,6 @@
+---
+#: System setup prior to executing poolctl-specific tasks
+
 - name: set proper timezone
   timezone:
     name: '{{ timezone }}'
@@ -8,7 +11,7 @@
 #    update_cache: yes
 #    upgrade: full
 
-- name: apt update and install pigpiod
+- name: Update apt and install python-related packages
   apt:
     name:
       - python3.7
@@ -16,7 +19,6 @@
       - python3.7-venv
       - python3-pip
       - python3.7-dev
-      - nginx
     state: latest
 
 - name: install pigpiod and tools
@@ -28,6 +30,7 @@
     state: latest
   notify: restart pigpiod
 
+
 - name: tune pgpiod startup arguments
   lineinfile:
     path: /lib/systemd/system/pigpiod.service
@@ -35,10 +38,12 @@
     line: ExecStart=/usr/bin/pigpiod -s 10 -b 200 -f
   notify: restart pigpiod
 
+
 - name: create system group _poolctl
   group:
     name: '{{ poolctl_group }}'
     system: yes
+
 
 - name: create system user _poolctl
   user:
@@ -48,7 +53,7 @@
     shell: /bin/false
     group: '{{ poolctl_group }}'
     groups:
+      - www-data
       - spi
       - i2c
       - gpio
-      - www-data

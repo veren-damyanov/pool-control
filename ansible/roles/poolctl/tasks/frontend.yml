@@ -1,13 +1,14 @@
 ---
 #: Prepare and transfer ionic front-end JS app
 
-- name: create poolctl and webroot dirs
+- name: Create poolctl and webroot dirs
   file:
     path: '{{ dist_home }}/webroot'
     state: directory
     recurse: yes
 
-- name: ensure webapp is built
+
+- name: Ensure webapp is built
   delegate_to: localhost
   run_once: yes
   command: ionic build --engine=browser --prod
@@ -15,21 +16,31 @@
     chdir: ../../../ionic-fe
     creates: www/index.html
 
-- name: sync local www directory to remote
+
+- name: Sync local www directory to remote
   synchronize:
     src: ../../../ionic-fe/www
     dest: '{{ dist_home }}/webroot/'
     checksum: yes  # compare based on checksums rather than timestamps
+    owner: no
+    group: no
+    perms: no
+    times: no
     rsync_opts:
       - '--delete'
       - '--ignore-errors'
       - '--force'
 
-- name: sync local static directory to remote
+
+- name: Sync local static directory to remote
   synchronize:
     src: ../../../resources/static
     dest: '{{ dist_home }}/webroot/'
     checksum: yes  # compare based on checksums rather than timestamps
+    owner: no
+    group: no
+    perms: no
+    times: no
     rsync_opts:
       - '--delete'
       - '--ignore-errors'

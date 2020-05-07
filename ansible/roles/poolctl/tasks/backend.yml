@@ -1,7 +1,7 @@
 ---
 #: Setup sanic back-end service
 
-- name: create poolctl log directory
+- name: Create poolctl log directory
   file:
     path: /var/log/poolctl
     state: directory
@@ -9,23 +9,30 @@
     group: www-data
     mode: 0775
 
-- name: create poolctl app distribution directory
+
+- name: Create poolctl app distribution directory
   file:
     path: '{{ dist_home }}'
     state: directory
     recurse: yes
 
-- name: create poolctl bin directory
+
+- name: Create poolctl bin directory
   file:
     path: '{{ poolctl_home }}/bin'
     state: directory
     recurse: yes
 
-- name: sync local sanic-be directory to remote
+
+- name: Sync local sanic-be directory to remote
   synchronize:
     src: ../../../sanic-be
     dest: '{{ dist_home }}'
     checksum: yes  # compare based on checksums rather than timestamps
+    owner: no
+    group: no
+    perms: no
+    times: no
     rsync_opts:
       - '--exclude="*.pyc"'
       - '--exclude=__pycache__'
@@ -35,13 +42,17 @@
       - '--force'
   notify: restart poolctl service
 
-- name: prepare custom virtualenv executable
+
+- name: Prepare custom virtualenv executable
   template:
     src: virtualenv-custom.j2
     dest: '{{ poolctl_home }}/bin/virtualenv-custom'
+    owner: '{{ poolctl_user }}'
+    group: '{{ poolctl_group }}'
     mode: 0775
 
-- name: create virtualenv, update pip and setuptools
+
+- name: Create virtualenv, update pip and setuptools
   pip:
     virtualenv: '{{ pyvenv_home }}'
     virtualenv_command: '{{ poolctl_home }}/bin/virtualenv-custom'
@@ -50,20 +61,23 @@
       - setuptools
     state: latest
 
-- name: make sure wheel is not present
+
+- name: Make sure wheel is not present
   pip:
     virtualenv: '{{ pyvenv_home }}'
     name:
       - wheel
     state: absent
 
-- name: install requirements in the virtualenv
+
+- name: Install requirements in the virtualenv
   pip:
     virtualenv: '{{ pyvenv_home }}'
     requirements: '{{ dist_home }}/sanic-be/requirements/req-runtime.txt'
   notify: restart poolctl service
 
-- name: set environment name variable creation
+
+- name: Create poolctl-related environment vars file
   template:
     src: poolctl.sh.j2
     dest: /etc/profile.d/poolctl.sh
@@ -72,7 +86,8 @@
     mode: 0644
   notify: reboot
 
-- name: create sanic systemd script
+
+- name: Create sanic systemd script
   template:
     src: poolctl-be.service.j2
     dest: /lib/systemd/system/poolctl-restapi.service
@@ -81,7 +96,8 @@
     mode: 0644
   notify: restart poolctl service
 
-- name: enable and start poolctl-restapi service
+
+- name: Enable and start poolctl-restapi service
   systemd:
     name: poolctl-restapi
     state: started

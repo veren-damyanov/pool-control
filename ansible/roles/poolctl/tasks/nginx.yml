@@ -1,7 +1,13 @@
 ---
 #: nginx setup
 
-- name: setup nginx default host config
+- name: Install nginx package
+  apt:
+    name: nginx
+    state: latest
+
+
+- name: Setup nginx default host config
   template:
     # src: nginx-default.j2  # TODO: revisit
     src: nginx-poolctl.j2
@@ -10,14 +16,16 @@
   vars:
     site_hostname: _
 
-- name: enable nginx default site
+
+- name: Enable nginx default site
   file:
     src: /etc/nginx/sites-available/default
     dest: /etc/nginx/sites-enabled/default
     state: link
   notify: restart nginx
 
-- name: setup nginx poolctl site config
+
+- name: Setup nginx poolctl site config
   template:
     src: nginx-poolctl.j2
     dest: /etc/nginx/sites-available/poolctl
@@ -25,7 +33,8 @@
   vars:
     site_hostname: '{{ nginx_hostname }}'
 
-- name: enable nginx poolctl site
+
+- name: Enable nginx poolctl site
   file:
     src: /etc/nginx/sites-available/poolctl
     dest: /etc/nginx/sites-enabled/poolctl

@@ -1,12 +1,13 @@
 ---
-#: Setup dedicated poolctl user + group and lock down pi user for security
+#: Lock down pi user (and potentially root) for improved security
 
-- name: create group rudy
+- name: Create group rudy
   group:
     name: rudy
     system: yes
 
-- name: create user rudy
+
+- name: Create user rudy
   user:
     name: rudy
     password: '{{ defaut_pass }}'
@@ -29,20 +30,22 @@
       - i2c
       - gpio
 
-- name: setup passwordless sudo for rudy
+
+- name: Setup passwordless sudo for rudy
   copy:
     content: "rudy ALL=(ALL) NOPASSWD: ALL\n"
     dest: /etc/sudoers.d/020_rudy-nopasswd
     mode: 0440
 
-- name: lock down user pi
+
+- name: Lock down user pi
   user:
     name: pi
-    # password: '*' disables user - linux-specific
-    password: '*'
+    password: '*'  # disable user - linux-specific
     shell: /bin/false
 
-#- name: lock down user root
-#  user:
-#    name: root
-#    password: '*'  # disable user - linux-specific
+
+- name: Lock down user root
+  user:
+    name: root
+    password: '*'  # disable user - linux-specific
