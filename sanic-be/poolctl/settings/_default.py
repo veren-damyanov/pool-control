@@ -23,6 +23,11 @@ APP_ARGS = {
     'debug': False,
 }
 
+#: Storage location for scheduled tasks and configured devices
+DATA_PATH = '/var/lib/poolctl'
+SCHED_PERSIST_FILENAME = 'schedules.pkl'
+DEVICES_PERSIST_FILENAME = 'devices.pkl'
+
 # Logging related settings
 
 LOG_CONSOLE_FORMAT = '%(levelname)s: %(message)s'
@@ -35,3 +40,5 @@ LOG_ACCESS_FILE_PATH = '/var/log/poolctl/sanic-access.log'
 LOG_CONSOLE_LEVEL = 'INFO'
 LOG_FILE_LEVEL = 'DEBUG'
 LOG_ACCESS_FILE_LEVEL = 'INFO'
+
+PERSIST_STATE_INTERVAL_SEC = 20

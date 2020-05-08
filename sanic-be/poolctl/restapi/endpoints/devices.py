@@ -34,12 +34,12 @@ def get_all_or_create(request):
         'GET': devices_resource().get_all,
         'POST': devices_resource().post,
     }
-    return json(func_map[method](request))
+    return json(func_map[method](request.json))
 
 
 @app.route(ep_root + '/<name:string>', methods=('GET',))
 def get_one(request, name):
-    return json(devices_resource().get(request, name))
+    return json(devices_resource().get(name))
 
 
 @app.route(ep_root + '/<name:string>', methods=('PUT',))
@@ -49,14 +49,14 @@ def put_one(request, name):
 
 @app.route(ep_root + '/<name:string>', methods=('DELETE', 'OPTIONS'))
 def delete_one(request, name):
-    return json(devices_resource().delete(request, name))
+    return json(devices_resource().delete(name))
 
 
 @app.route(ep_root + '/available', methods=('GET',))
 def available_devices(request):
-    return json(devices_resource().get_available_devices(request))
+    return json(devices_resource().get_available_devices())
 
 
 @app.route(ep_root + '/inuse', methods=('GET',))
 def devices_inuse(request):
-    return json(devices_resource().get_devices_inuse(request))
+    return json(devices_resource().get_devices_inuse())

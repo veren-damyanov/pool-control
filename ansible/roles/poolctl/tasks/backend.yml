@@ -10,6 +10,16 @@
     mode: 0775
 
 
+- name: Create poolctl var-lib directory
+  file:
+    path: /var/lib/poolctl
+    state: directory
+    owner: '{{ poolctl_user }}'
+    group: root
+    mode: 0775
+
+
+
 - name: Create poolctl app distribution directory
   file:
     path: '{{ dist_home }}'
@@ -34,9 +44,10 @@
     perms: no
     times: no
     rsync_opts:
+      - '--exclude=_local.py'
       - '--exclude="*.pyc"'
       - '--exclude=__pycache__'
-      - '--exclude=_local.py'
+      - '--exclude=.pytest_cache'
       - '--delete'
       - '--ignore-errors'
       - '--force'

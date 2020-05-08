@@ -1,3 +1,4 @@
 -r req-runtime.txt
 pytest
 pytest-mock
+pytest-asyncio

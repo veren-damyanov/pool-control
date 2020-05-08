@@ -30,6 +30,6 @@ POOL_TIMEZONE = 'Europe/Sofia'
 #: the port and/or the debug mode).
 APP_ARGS = {
     'host': '0.0.0.0',
-    'port': 9090,
-    'debug': False,
+    'port': 8000,
+    'debug': True,
 }

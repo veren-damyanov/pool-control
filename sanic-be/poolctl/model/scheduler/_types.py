@@ -2,10 +2,10 @@
 Scheduler model types.
 
 """
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 from poolctl.utils.misc import UndefType
 
-SchedRecordT = Union[dict, UndefType]
+SchedRecAsDictT = Dict[str, Union[str, int]]
 
 
 class SchedulerStoreT(object):
@@ -14,14 +14,14 @@ class SchedulerStoreT(object):
     def has(self, pkey: str) -> bool:
         raise NotImplementedError
 
-    def put(self, pkey: str, payload: SchedRecordT):
+    def put(self, rec_dict: SchedRecAsDictT) -> None:
         raise NotImplementedError
 
-    def get(self, pkey: str) -> Optional[SchedRecordT]:
+    def get(self, pkey: str) -> Optional[SchedRecAsDictT]:
         raise NotImplementedError
 
-    def delete(self, pkey: str) -> Optional[SchedRecordT]:
+    def delete(self, pkey: str) -> Optional[SchedRecAsDictT]:
         raise NotImplementedError
 
-    def get_all(self) -> List[SchedRecordT]:
+    def get_all(self) -> List[SchedRecAsDictT]:
         raise NotImplementedError

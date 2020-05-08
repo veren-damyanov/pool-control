@@ -2,6 +2,9 @@
 
 import random
 import string
+import time
+
+random.seed(time.time_ns())
 
 
 class UndefType(object):
@@ -33,7 +36,7 @@ def check_type(obj, types):
         raise TypeError(f'expected {types}, got {obj!r} of {type(obj)}')
 
 
-def random_string(size=4, chars=string.ascii_lowercase):
+def random_string(size=6, chars=string.ascii_lowercase):
     """Return a random string with length ``size`` containing characters
     picked from ``chars``.
     """

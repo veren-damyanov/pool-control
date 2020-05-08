@@ -2,6 +2,8 @@
 Controller processing REST API requests ... TODO: describe briefly
 
 """
+from copy import copy
+
 from sanic.log import logger as log
 
 from poolctl.utils.misc import check_type
@@ -20,13 +22,13 @@ class DevicesResource(BaseResource):
         check_type(device_manager, DeviceManager)
         self._manager = device_manager
 
-    def get_all(self, order_by=None):  # TODO: implement sorting
+    def get_all(self, payload=None, order_by=None):  # TODO: implement sorting
         return {
             'status': 'success',
             'devices': [device_rec for device_rec in self._manager.get_all()],
         }
 
-    def get(self, request, name):
+    def get(self, name):
         device_rec = self._manager.get_device(name)
         if not device_rec:
             abort_404('gpio device not found for name ' + name)
@@ -36,9 +38,9 @@ class DevicesResource(BaseResource):
             'record': device_rec,
         }
 
-    def post(self, request):
-        device_rec = request.json
-        # TODO: check request payload schema
+    def post(self, payload):
+        device_rec = copy(payload)
+        # TODO: check payload payload schema
         name = device_rec['name']
         kind = device_rec['kind']
         gpio = int(device_rec['gpio'])
@@ -64,13 +66,13 @@ class DevicesResource(BaseResource):
                 'record': put_record,
             }
 
-    def put(self, request, name):
-        device_rec = request.json
-        # TODO: check request payload schema
+    def put(self, payload, name):
+        device_rec = copy(payload)
+        # TODO: check payload payload schema
         rec_name = str(device_rec['name'])
 
         if rec_name != name:
-            log.error('Put device: bad request: rec_name=%r != name=%r (device_rec=%r)')
+            log.error('Put device: bad payload: rec_name=%r != name=%r (device_rec=%r)')
             abort_400(f'body name != url name ({rec_name!r} != {name!r})')
 
         if not self._manager.has(name):
@@ -90,7 +92,7 @@ class DevicesResource(BaseResource):
                 'record': put_record,
             }
 
-    def delete(self, request, name):
+    def delete(self, name):
         rec = self._manager.delete_device(name)
         if rec is None:
             abort_404(f'record not found for name {name!r}')
@@ -100,7 +102,7 @@ class DevicesResource(BaseResource):
             'deleted_record': rec,
         }
 
-    def get_available_devices(self, request):
+    def get_available_devices(self):
         return {
             'status': 'success',
             'names': self._manager.get_available_names(),
@@ -108,7 +110,7 @@ class DevicesResource(BaseResource):
             'kinds': self._manager.get_available_kinds(),
         }
 
-    def get_devices_inuse(self, request):
+    def get_devices_inuse(self):
         return {
             'status': 'success',
             'names': self._manager.get_devices_inuse(),

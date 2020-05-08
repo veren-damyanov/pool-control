@@ -2,20 +2,43 @@
 TODO:
 
 """
+from __future__ import annotations
+
 from typing import Optional, Dict, List
 
 from sanic.log import logger as log
 
 from poolctl import settings as cfg
 from poolctl.utils.misc import nameof
+from poolctl.model.mixins import PersistMixin
 from poolctl.model.devices.named import DeviceDriver, get_device_names_registry
 
 
-class DeviceManager(object):
+class DeviceManager(PersistMixin, object):
+
+    @classmethod
+    async def _from_persistent_data(cls, data: Optional[dict], **kw) -> DeviceManager:
+        manager = DeviceManager()
+        if data:
+            for rec in data.values():
+                manager.put_device(**rec)
+        manager.set_clean()
+        return manager
 
     def __init__(self):
+        PersistMixin.__init__(self)
         self.ALL_GPIOS = tuple(sorted(elem[1] for elem in cfg.GPIO_TABLE))
         self.devices: Dict[str, DeviceDriver] = dict()
+
+    def _persistent_data(self):
+        result = dict()
+        for device in self.devices.values():
+            result[device.name] = dict(name=device.name, kind=device.__kind__, pin=device.pin)
+        return result
+
+    def shutdown(self):
+        for dev in self.devices.values():
+            dev.close()
 
     def has(self, name: str):
         return name in self.devices
@@ -28,6 +51,7 @@ class DeviceManager(object):
         DeviceKlass = get_device_names_registry().klass_for(kind)
         device: DeviceDriver = DeviceKlass(pin, name)
         self.devices[name] = device
+        self._dirty = True
         log.info('Created device name=%r: kind=%r pin=%r klass=%r', name, kind, pin, nameof(DeviceKlass))
         return device.as_dict()
 
@@ -46,6 +70,7 @@ class DeviceManager(object):
         # FIXME: We need to check if there's something for this device in the scheduler
         try:
             device = self.devices[name]
+            self._dirty = True
         except KeyError:
             log.warning('Deleting device failed: name=%r not found', name)
             return None
@@ -58,10 +83,6 @@ class DeviceManager(object):
 
     def get_all(self) -> List[dict]:
         return [device.as_dict() for device in self.devices.values()]
-
-    def shutdown(self):
-        for dev in self.devices.values():
-            dev.close()
 
     @staticmethod
     def get_all_names():

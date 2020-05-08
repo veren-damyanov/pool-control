@@ -23,16 +23,14 @@ class TestRecordContainer:
         assert result == '2,4,5,6'
 
     def test_wishful_api(self):
-        rec_obj = RecordContainer(
-            {
-                'pkey': 'gyroje',
-                'target': 'T',
-                'start_at': '1990-02-19T08:05+02:00',
-                'end_at': '1990-02-19T20:10+02:00',
-                'dow': ['MO', 'TU', 'WE', 'TH', 'FR'],
-                'value': 0
-            }
-        )
+        rec_obj = RecordContainer({
+            'pkey': 'gyroje',
+            'target': 'T',
+            'start_at': '1990-02-19T08:05+02:00',
+            'end_at': '1990-02-19T20:10+02:00',
+            'dow': ['MO', 'TU', 'WE', 'TH', 'FR'],
+            'value': 0
+        })
         assert rec_obj.id == 'gyroje'
         assert rec_obj.target == 'T'
         assert rec_obj.start_at == '1990-02-19T08:05+02:00'

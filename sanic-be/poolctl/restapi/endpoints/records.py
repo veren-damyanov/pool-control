@@ -37,7 +37,7 @@ def report_records_ep_availability():
 
 @app.route('/')
 async def test(request):
-    log.info('request detected')
+    log.info('payload detected')
     return html('<h3>PoolCtl app works! ;)<h3>')
 
 
@@ -48,19 +48,19 @@ def get_all_or_create(request):
         'GET': records_resource().get_all,
         'POST': records_resource().post,
     }
-    return func_map[method](request)
+    return json(func_map[method](request.json))
 
 
 @app.route(ep_root + '/<pkey:string>', methods=['GET'])
 def get_one(request, pkey):
-    return records_resource().get(request, pkey)
+    return json(records_resource().get(pkey))
 
 
 @app.route(ep_root + '/<pkey:string>', methods=['PUT'])
 def put_one(request, pkey):
-    return records_resource().put(request, pkey)
+    return json(records_resource().put(request.json, pkey))
 
 
 @app.route(ep_root + '/<pkey:string>', methods=['DELETE', 'OPTIONS'])
 def delete_one(request, pkey):
-    return records_resource().delete(request, pkey)
+    return json(records_resource().delete(pkey))

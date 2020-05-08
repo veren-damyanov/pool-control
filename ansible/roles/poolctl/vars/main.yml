@@ -1,0 +1,2 @@
+#: The env name considered by the REST API back-end (sanic-be)
+environment_name: integration  # integration, stage, prod (also local if necessary)
