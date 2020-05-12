@@ -24,7 +24,7 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
         scheduler = CustomScheduler(event_loop=kw.pop('event_loop', None))
         if data:
             for dict_record in data.values():
-                scheduler.add_double_job(RecordContainer(dict_record))
+                scheduler._add_double_job(RecordContainer(dict_record))
         scheduler.set_clean()
         return scheduler
 
@@ -68,6 +68,12 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
         return start_job, end_job
 
     def add_double_job(self, record_obj: RecordContainer):
+        """Wraps _add_double_job with added call to set_dirty()."""
+        start_job, end_job = self._add_double_job(record_obj)
+        if start_job:  # and end_job, implicitly
+            self.set_dirty()
+
+    def _add_double_job(self, record_obj: RecordContainer):
         start_hour, start_minute = record_obj.start_at_hour_minute()
         end_hour, end_minute = record_obj.end_at_hour_minute()
 
@@ -133,5 +139,4 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
             start_job, end_job = self.get_double_job(record_obj.id)
             message = f'inconsistent double job state after put: start_job={start_job}, end_job={end_job}'
             assert both_or_none(start_job, end_job), message
-            if start_job:  # and end_job, implicitly
-                self.set_dirty()
+            return start_job, end_job

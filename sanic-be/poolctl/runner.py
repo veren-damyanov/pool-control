@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from os.path import join as pjoin
 
+from apscheduler.jobstores.base import ConflictingIdError
 from sanic.log import logger as log
 
 from poolctl import settings as cfg
@@ -21,7 +22,7 @@ from poolctl.restapi.resources.records import RecordsResource
 
 async def persist_state_job(persist_obect: PersistMixin):
     log.info('Tack! persist_state_job(): time %s  id(persist_obect)=0x%x', datetime.now(), id(persist_obect))
-    persist_obect.persist()
+    await persist_obect.persist()
     # await manager.persist(pjoin(cfg.DATA_PATH, cfg.DEVICES_PERSIST_FILENAME))
     # await scheduler.persist(pjoin(cfg.DATA_PATH, cfg.SCHED_PERSIST_FILENAME))
 
@@ -53,16 +54,13 @@ class Runner(DirtyListenerT, object):
         # schedule job for regular persistence
         job_id = self.CLASS_TO_JOB_ID_MAP[type(dirty_object)]
         run_date = datetime.now() + timedelta(seconds=cfg.PERSIST_STATE_OFFSET_SEC)
-        self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
-                               id=job_id, name=job_id)
-        self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
-                               id=job_id, name=job_id)
-        # try:
-        #     self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
-        #                            id=job_id, name=job_id)
-        # except Exception as err:
-        #     # check exception type and possibly message
-        #     ...
+        try:
+            self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
+                                   id=job_id, name=job_id)
+        except ConflictingIdError as err:
+            log.info('Job with id %r already scheduled. Skipping.', job_id)
+        else:
+            log.info('Job with id %r scheduled.', job_id)
 
     async def launch(self):
         # create essential singletons

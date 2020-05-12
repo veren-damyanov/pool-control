@@ -21,7 +21,7 @@ class DeviceManager(PersistMixin, object):
         manager = DeviceManager()
         if data:
             for rec in data.values():
-                manager.put_device(**rec)
+                manager._put_device(**rec)
         manager.set_clean()
         return manager
 
@@ -44,6 +44,12 @@ class DeviceManager(PersistMixin, object):
         return name in self.devices
 
     def put_device(self, name: str, kind: str, pin: int):
+        """Wraps _put_device with added call to set_dirty()."""
+        result = self._put_device(name, kind, pin)
+        self.set_dirty()
+        return result
+
+    def _put_device(self, name: str, kind: str, pin: int):
         # What changes within the device setup? Can we do that if there are records using
         # this device in the scheduler?
         # FIXME: discuss above issues and adopt the code to handle all that correctly.
@@ -51,7 +57,6 @@ class DeviceManager(PersistMixin, object):
         DeviceKlass = get_device_names_registry().klass_for(kind)
         device: DeviceDriver = DeviceKlass(pin, name)
         self.devices[name] = device
-        self.set_dirty()
         log.info('Created device name=%r: kind=%r pin=%r klass=%r', name, kind, pin, nameof(DeviceKlass))
         return device.as_dict()
 
