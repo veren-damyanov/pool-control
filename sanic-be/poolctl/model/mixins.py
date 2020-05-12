@@ -20,6 +20,12 @@ class FileNotProvided(Exception):
     argument provided."""
 
 
+class DirtyListenerT(object):
+
+    def on_dirty(self, dirty_object: PersistMixin):
+        raise NotImplementedError('abstract')
+
+
 class PersistMixin(object):
     # must be set for file-less persistence-related calls to succeed
     persistent_file: OptionalPathOrOpenFileT = None
@@ -64,12 +70,17 @@ class PersistMixin(object):
 
     def __init__(self):
         self._dirty = False
+        self.dirty_listener = None
 
     def set_clean(self):
         self._dirty = False
 
     def is_dirty(self):
         return self._dirty
+
+    def set_dirty(self):
+        self._dirty = True
+        self.dirty_listener.on_dirty(self)
 
     def persistent_data(self) -> Optional[dict]:
         if not self._dirty:

@@ -10,13 +10,11 @@ from sanic.log import logger as log
 from apscheduler.schedulers.asyncio import AsyncIOScheduler, run_in_event_loop
 
 from poolctl.utils.misc import typeof
+from poolctl.model import PERSIST_DEVICES_JOB_ID, PERSIST_SCHEDULE_JOB_ID
 from poolctl.model.scheduler import both_or_none, raw_record
 from poolctl.model.mixins import PersistMixin
 from .record_container import RecordContainer
 from .tasks import switch_device_off, switch_device_on
-
-PERSIST_STATE_ID = 'persist_state'
-PERSIST_STATE_NAME = 'persist_state'
 
 
 class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be last to not overshadow Scheduler methods
@@ -37,7 +35,7 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
         jobs = self.get_jobs()
         result = OrderedDict()  # explicitly preserve order
         for job in jobs:
-            if job.id == PERSIST_STATE_ID:  # skip the 'persist_state' job
+            if job.id in (PERSIST_DEVICES_JOB_ID, PERSIST_SCHEDULE_JOB_ID):  # skip the 'persist_state' job
                 continue
             rec = raw_record(job)
             result[rec['pkey']] = rec.copy()
@@ -66,7 +64,7 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
         start_job_none, end_job_none = self.get_double_job(pkey)
         message = f'inconsistent double job after delete: start_job={start_job}, end_job={end_job}'
         assert not (start_job_none or end_job_none), message
-        self._dirty = True
+        self.set_dirty()
         return start_job, end_job
 
     def add_double_job(self, record_obj: RecordContainer):
@@ -136,4 +134,4 @@ class CustomScheduler(AsyncIOScheduler, PersistMixin):  # PersistMixin must be l
             message = f'inconsistent double job state after put: start_job={start_job}, end_job={end_job}'
             assert both_or_none(start_job, end_job), message
             if start_job:  # and end_job, implicitly
-                self._dirty = True
+                self.set_dirty()

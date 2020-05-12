@@ -4,27 +4,29 @@ TODO:
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from os.path import join as pjoin
 
 from sanic.log import logger as log
 
 from poolctl import settings as cfg
+from poolctl.model import PERSIST_DEVICES_JOB_ID, PERSIST_SCHEDULE_JOB_ID
+from poolctl.model.mixins import DirtyListenerT, PersistMixin
 from poolctl.model.devices.manager import DeviceManager
-from poolctl.model.scheduler.custom_scheduler import CustomScheduler, PERSIST_STATE_ID, PERSIST_STATE_NAME
+from poolctl.model.scheduler.custom_scheduler import CustomScheduler
 from poolctl.model.scheduler.scheduler_store import SchedulerStore
 from poolctl.restapi.resources.devices import DevicesResource
 from poolctl.restapi.resources.records import RecordsResource
 
 
-async def persist_state_job(scheduler: CustomScheduler, manager: DeviceManager):
-    log.info('Tack! persist_state_job(): time %s  store_id=0x%x, manager_id=0x%x',
-              datetime.now(), id(scheduler), id(manager))
-    await manager.persist(pjoin(cfg.DATA_PATH, cfg.DEVICES_PERSIST_FILENAME))
-    await scheduler.persist(pjoin(cfg.DATA_PATH, cfg.SCHED_PERSIST_FILENAME))
+async def persist_state_job(persist_obect: PersistMixin):
+    log.info('Tack! persist_state_job(): time %s  id(persist_obect)=0x%x', datetime.now(), id(persist_obect))
+    persist_obect.persist()
+    # await manager.persist(pjoin(cfg.DATA_PATH, cfg.DEVICES_PERSIST_FILENAME))
+    # await scheduler.persist(pjoin(cfg.DATA_PATH, cfg.SCHED_PERSIST_FILENAME))
 
 
-class Runner(object):
+class Runner(DirtyListenerT, object):
     _instance = None
 
     @classmethod
@@ -42,18 +44,35 @@ class Runner(object):
         self.devices_resource: DevicesResource = None
         self.records_resource: RecordsResource = None
 
+    CLASS_TO_JOB_ID_MAP = {
+        CustomScheduler: PERSIST_SCHEDULE_JOB_ID,
+        DeviceManager: PERSIST_DEVICES_JOB_ID,
+    }
+
+    def on_dirty(self, dirty_object: PersistMixin):
+        # schedule job for regular persistence
+        job_id = self.CLASS_TO_JOB_ID_MAP[type(dirty_object)]
+        run_date = datetime.now() + timedelta(seconds=cfg.PERSIST_STATE_OFFSET_SEC)
+        self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
+                               id=job_id, name=job_id)
+        self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
+                               id=job_id, name=job_id)
+        # try:
+        #     self.scheduler.add_job(persist_state_job, 'date', (dirty_object,), run_date=run_date,
+        #                            id=job_id, name=job_id)
+        # except Exception as err:
+        #     # check exception type and possibly message
+        #     ...
+
     async def launch(self):
         # create essential singletons
         DeviceManager.persistent_file = pjoin(cfg.DATA_PATH, cfg.DEVICES_PERSIST_FILENAME)
         CustomScheduler.persistent_file = pjoin(cfg.DATA_PATH, cfg.SCHED_PERSIST_FILENAME)
         self.device_manager = device_manager = await DeviceManager.from_persistent_data()
+        self.device_manager.dirty_listener = self
         self.scheduler = scheduler = await CustomScheduler.from_persistent_data(event_loop=self.loop)
+        self.scheduler.dirty_listener = self
         self.schedule_store = SchedulerStore.launch(self.scheduler)
-
-        # schedule job for regular persistence
-        scheduler.add_job(persist_state_job, 'interval', (scheduler, device_manager),
-                          seconds=cfg.PERSIST_STATE_INTERVAL_SEC,
-                          id=PERSIST_STATE_ID, name=PERSIST_STATE_NAME)
         scheduler.start()
 
         # instantiate API resources

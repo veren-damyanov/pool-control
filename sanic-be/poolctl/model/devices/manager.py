@@ -51,7 +51,7 @@ class DeviceManager(PersistMixin, object):
         DeviceKlass = get_device_names_registry().klass_for(kind)
         device: DeviceDriver = DeviceKlass(pin, name)
         self.devices[name] = device
-        self._dirty = True
+        self.set_dirty()
         log.info('Created device name=%r: kind=%r pin=%r klass=%r', name, kind, pin, nameof(DeviceKlass))
         return device.as_dict()
 
@@ -70,7 +70,7 @@ class DeviceManager(PersistMixin, object):
         # FIXME: We need to check if there's something for this device in the scheduler
         try:
             device = self.devices[name]
-            self._dirty = True
+            self.set_dirty()
         except KeyError:
             log.warning('Deleting device failed: name=%r not found', name)
             return None
