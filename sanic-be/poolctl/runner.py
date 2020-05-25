@@ -23,8 +23,6 @@ from poolctl.restapi.resources.records import RecordsResource
 async def persist_state_job(persist_obect: PersistMixin):
     log.info('Tack! persist_state_job(): time %s  id(persist_obect)=0x%x', datetime.now(), id(persist_obect))
     await persist_obect.persist()
-    # await manager.persist(pjoin(cfg.DATA_PATH, cfg.DEVICES_PERSIST_FILENAME))
-    # await scheduler.persist(pjoin(cfg.DATA_PATH, cfg.SCHED_PERSIST_FILENAME))
 
 
 class Runner(DirtyListenerT, object):
